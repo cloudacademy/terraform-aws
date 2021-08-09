@@ -219,7 +219,7 @@ resource "aws_launch_template" "launchtemplate1" {
   
   image_id = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
-  key_name = "Oregon2Icecream"
+  key_name = "test"
 
   network_interfaces {
     associate_public_ip_address = false
@@ -246,7 +246,7 @@ resource "aws_lb" "alb1" {
   security_groups    = [aws_security_group.alb.id]
   subnets            = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]
 
-  enable_deletion_protection = true
+  enable_deletion_protection = false
   
   /*
   access_logs {
