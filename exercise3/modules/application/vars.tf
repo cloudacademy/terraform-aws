@@ -1,10 +1,8 @@
 variable "instance_type" {}
 variable "key_name" {}
 variable "vpc_id" {}
-variable "subnet1_id" {}
-variable "subnet2_id" {}
-variable "subnet3_id" {}
-variable "subnet4_id" {}
+variable "public_subnets" {}
+variable "private_subnets" {}
 variable "webserver_sg_id" {}
 variable "alb_sg_id" {}
 variable "mongodb_ip" {}

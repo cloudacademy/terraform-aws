@@ -48,7 +48,7 @@ resource "aws_security_group" "alb" {
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
-    security_groups  = [aws_security_group.webserver.id]
+    security_groups  = [aws_security_group.application.id]
   }
 
   tags = {
@@ -56,9 +56,9 @@ resource "aws_security_group" "alb" {
   }
 }
 
-resource "aws_security_group" "webserver" {
-  name        = "webserver"
-  description = "webserver network traffic"
+resource "aws_security_group" "application" {
+  name        = "application"
+  description = "application network traffic"
   vpc_id      = var.vpc_id
 
   ingress {

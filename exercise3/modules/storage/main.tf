@@ -11,28 +11,31 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  #Canonical
+  owners = ["099720109477"] 
 }
-  
+
+#====================================
+
 resource "aws_instance" "mongo" {
 	ami             = data.aws_ami.ubuntu.id
 	instance_type   = var.instance_type
 	key_name        = var.key_name
-    subnet_id       = var.subnet_id
-    security_groups = [var.sg_id]
+  subnet_id       = var.subnet_id
+  security_groups = [var.sg_id]
 	
-    /*
-    user_data = << EOF
-		#! /bin/bash
-                sudo apt-get update
-		sudo apt-get install -y apache2
-		sudo systemctl start apache2
-		sudo systemctl enable apache2
-		echo "<h1>Deployed via Terraform</h1>" | sudo tee /var/www/html/index.html
+  /*
+  user_data = << EOF
+  #! /bin/bash
+  sudo apt-get update
+  sudo apt-get install -y nginx
+  sudo systemctl start nginx
+  sudo systemctl enable nginx
+  echo "<h1>CloudAcademy 2021</h1>" | sudo tee /var/www/html/index.html
 	EOF
-    */
+  */
 
-    user_data = filebase64("${path.module}/install.sh")
+  user_data = filebase64("${path.module}/install.sh")
 
 	tags = {
 		Name = "Mongo"	

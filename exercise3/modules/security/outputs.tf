@@ -1,6 +1,6 @@
-output "webserver_sg_id" {
+output "application_sg_id" {
   description = "web server sg id"
-  value       = aws_security_group.webserver.id
+  value       = aws_security_group.application.id
 }
 
 output "alb_sg_id" {

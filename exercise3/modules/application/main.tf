@@ -14,6 +14,8 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+#====================================
+
 data "template_cloudinit_config" "config" {
   gzip          = false
   base64_encode = false
@@ -24,46 +26,18 @@ data "template_cloudinit_config" "config" {
     #! /bin/bash
     apt-get -y update
     apt-get -y install nginx
-    systemctl start nginx
-
-    echo ===========================
-    echo install yarn...
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-    apt-get update
-    apt-get -y install yarn
-
-    echo install golang...
-    wget -c https://golang.org/dl/go1.16.7.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
-    export PATH=$PATH:/usr/local/go/bin
-
+    apt-get -y install jq
+    
     mkdir -p /tmp/cloudacademy-app
     cd /tmp/cloudacademy-app
 
     echo ===========================
-    echo cloning...
-    git clone https://github.com/cloudacademy/voteapp-api-go
-    git clone https://github.com/cloudacademy/voteapp-frontend-react-2020.git
-
-    echo ===========================
-    echo building api v1.01...
-    mkdir -p /tmp/cloudacademy-app/go
-    mkdir -p /tmp/cloudacademy-app/go-cache
-    export GOPATH=/tmp/cloudacademy-app/go
-    export GOCACHE=/tmp/cloudacademy-app/go-cache
-    pushd ./voteapp-api-go
-    which go
-    go env
-    go get -v
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o api
-    MONGO_CONN_STR=mongodb://${var.mongodb_ip}:27017/langdb ./api &
-    popd
-
-    echo ===========================
-    echo building frontend v2020...
+    echo FRONTEND - download latest release and install...
+    mkdir -p ./voteapp-frontend-react-2020
     pushd ./voteapp-frontend-react-2020
-    yarn install
-    yarn build
+    curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2020/releases/latest | jq -r '.assets[0].browser_download_url' | xargs curl -OL
+    INSTALL_FILENAME=$(curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2020/releases/latest | jq -r '.assets[0].name')
+    tar -xvzf $INSTALL_FILENAME
     rm -rf /var/www/html
     cp -R build /var/www/html
     cat > /var/www/html/env-config.js << EOFF
@@ -71,43 +45,66 @@ data "template_cloudinit_config" "config" {
     EOFF
     popd
 
+    echo ===========================
+    echo API - download latest release and install...
+    mkdir -p ./voteapp-api-go
+    pushd ./voteapp-api-go
+    curl -sL https://api.github.com/repos/cloudacademy/voteapp-api-go/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' | xargs curl -OL
+    INSTALL_FILENAME=$(curl -sL https://api.github.com/repos/cloudacademy/voteapp-api-go/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .name')
+    tar -xvzf $INSTALL_FILENAME
+    MONGO_CONN_STR=mongodb://${var.mongodb_ip}:27017/langdb ./api &
+    popd
+
+    systemctl restart nginx
+    systemctl status nginx
     echo fin v1.00!
 
-    EOF
+    EOF    
   }
 }
 
-resource "aws_launch_template" "launchtemplate1" {
-  name = "web"
+#====================================
+
+resource "aws_iam_instance_profile" "codedeploy_profile" {
+  name = "codedeploy_profile"
+  role = "CloudAcademyCodeDeployRole"
+}
+
+resource "aws_launch_template" "apptemplate" {
+  name = "application"
   
   image_id        = data.aws_ami.ubuntu.id
 	instance_type   = var.instance_type
 	key_name        = var.key_name
+
+  iam_instance_profile {
+    arn = aws_iam_instance_profile.codedeploy_profile.arn
+  }
 
   network_interfaces {
     associate_public_ip_address = false
     security_groups = [var.webserver_sg_id]
   }
 
-  //vpc_security_group_ids = [aws_security_group.webserver.id]
-
   tag_specifications {
     resource_type = "instance"
 
     tags = {
-      Name = "App"
+      Name = "FrontendApp"
     }
   }
 
   user_data = "${base64encode(data.template_cloudinit_config.config.rendered)}"
 }
 
+#====================================
+
 resource "aws_lb" "alb1" {
   name               = "alb1"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.alb_sg_id]
-  subnets            = [var.subnet1_id, var.subnet2_id]
+  subnets            = var.public_subnets
 
   enable_deletion_protection = false
   
@@ -190,17 +187,19 @@ resource "aws_alb_listener_rule" "api_rule1" {
   }
 }
 
-resource "aws_autoscaling_group" "asg" {
-  vpc_zone_identifier       = [var.subnet3_id, var.subnet4_id]
+#====================================
 
-  desired_capacity   = var.asg_desired
-  max_size           = var.asg_max_size
-  min_size           = var.asg_min_size
+resource "aws_autoscaling_group" "asg" {
+  vpc_zone_identifier = var.private_subnets
+
+  desired_capacity    = var.asg_desired
+  max_size            = var.asg_max_size
+  min_size            = var.asg_min_size
   
   target_group_arns = [aws_alb_target_group.webserver.arn, aws_alb_target_group.api.arn]
 
   launch_template {
-    id      = aws_launch_template.launchtemplate1.id
+    id      = aws_launch_template.apptemplate.id
     version = "$Latest"
   }
 }
