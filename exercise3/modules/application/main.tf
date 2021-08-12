@@ -27,6 +27,9 @@ data "template_cloudinit_config" "config" {
     apt-get -y update
     apt-get -y install nginx
     apt-get -y install jq
+
+    ALB_DNS=${aws_lb.alb1.dns_name}
+    MONGODB_PRIVATEIP=${var.mongodb_ip}
     
     mkdir -p /tmp/cloudacademy-app
     cd /tmp/cloudacademy-app
@@ -41,18 +44,19 @@ data "template_cloudinit_config" "config" {
     rm -rf /var/www/html
     cp -R build /var/www/html
     cat > /var/www/html/env-config.js << EOFF
-    window._env_ = {REACT_APP_APIHOSTPORT: "${aws_lb.alb1.dns_name}:8080"}
+    window._env_ = {REACT_APP_APIHOSTPORT: "$ALB_DNS:8080"}
     EOFF
     popd
 
     echo ===========================
-    echo API - download latest release and install...
+    echo API - download latest release, install, and start...
     mkdir -p ./voteapp-api-go
     pushd ./voteapp-api-go
     curl -sL https://api.github.com/repos/cloudacademy/voteapp-api-go/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' | xargs curl -OL
     INSTALL_FILENAME=$(curl -sL https://api.github.com/repos/cloudacademy/voteapp-api-go/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .name')
     tar -xvzf $INSTALL_FILENAME
-    MONGO_CONN_STR=mongodb://${var.mongodb_ip}:27017/langdb ./api &
+    #start the API up...
+    MONGO_CONN_STR=mongodb://$MONGODB_PRIVATEIP:27017/langdb ./api &
     popd
 
     systemctl restart nginx
@@ -65,21 +69,12 @@ data "template_cloudinit_config" "config" {
 
 #====================================
 
-resource "aws_iam_instance_profile" "codedeploy_profile" {
-  name = "codedeploy_profile"
-  role = "CloudAcademyCodeDeployRole"
-}
-
 resource "aws_launch_template" "apptemplate" {
   name = "application"
   
   image_id        = data.aws_ami.ubuntu.id
 	instance_type   = var.instance_type
 	key_name        = var.key_name
-
-  iam_instance_profile {
-    arn = aws_iam_instance_profile.codedeploy_profile.arn
-  }
 
   network_interfaces {
     associate_public_ip_address = false
@@ -201,5 +196,12 @@ resource "aws_autoscaling_group" "asg" {
   launch_template {
     id      = aws_launch_template.apptemplate.id
     version = "$Latest"
+  }
+}
+
+data "aws_instances" "application" {
+  instance_tags = {
+    # Use whatever name you have given to your instances
+    Name = "FrontendApp"
   }
 }
