@@ -29,15 +29,16 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  # Canonical
+  owners = ["099720109477"]
 }
 
 resource "aws_vpc" "main" {
   cidr_block       = "10.0.0.0/16"
-  instance_tenancy = "default"
 
   tags = {
-    Name = "tfdemo"
+    Name = "CloudAcademy"
+    Demo = "Terraform"
   }
 }
 
@@ -67,7 +68,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    "Name" = "igw-tfdemo"
+    "Name" = "igw-cloudacademy"
   }
 }
 
@@ -80,7 +81,7 @@ resource "aws_route_table" "rt1" {
   }
 
   tags = {
-    Name = "example"
+    Name = "public"
   }
 }
 
@@ -129,16 +130,17 @@ resource "aws_security_group" "webserver" {
 
 resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
-  key_name      = "test"
-  user_data     = filebase64("${path.module}/install.sh")
-
+  instance_type = var.instance_type
+  key_name      = var.key_name
+  
   tags = {
-    Name = "HelloWorld"
+    Name = "CloudAcademy-Terraform"
   }
 
   associate_public_ip_address = true
 
   subnet_id = aws_subnet.subnet1.id
   security_groups = [aws_security_group.webserver.id]
+
+  user_data     = filebase64("${path.module}/install.sh")
 }
