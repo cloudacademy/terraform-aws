@@ -1,24 +1,5 @@
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  #Canonical
-  owners = ["099720109477"] 
-}
-
-#====================================
-
 resource "aws_instance" "mongo" {
-	ami             = data.aws_ami.ubuntu.id
+	ami             = "ami-02868af3c3df4b3aa"
 	instance_type   = var.instance_type
 	key_name        = var.key_name
   subnet_id       = var.subnet_id

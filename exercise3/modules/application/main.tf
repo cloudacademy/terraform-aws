@@ -204,4 +204,10 @@ data "aws_instances" "application" {
     # Use whatever name you have given to your instances
     Name = "FrontendApp"
   }
+
+  instance_state_names = ["pending", "running"]
+
+  depends_on = [
+    aws_autoscaling_group.asg
+  ]
 }

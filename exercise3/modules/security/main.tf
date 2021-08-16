@@ -62,19 +62,21 @@ resource "aws_security_group" "application" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description      = "80 from vpc"
+    description      = "80 from alb"
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
-    cidr_blocks      = ["10.0.0.0/16"]
+    cidr_blocks      = ["10.0.1.0/24", "10.0.2.0/24"]
+    #security_groups  = [aws_security_group.alb.id]
   }
 
   ingress {
-    description      = "8080 from vpc"
+    description      = "8080 from alb"
     from_port        = 8080
     to_port          = 8080
     protocol         = "tcp"
-    cidr_blocks      = ["10.0.0.0/16"]
+    cidr_blocks      = ["10.0.1.0/24", "10.0.2.0/24"]
+    #security_groups  = [aws_security_group.alb.id]
   }
 
   ingress {
@@ -93,7 +95,7 @@ resource "aws_security_group" "application" {
   }
 
   tags = {
-    Name = "allow traffic"
+    Name = "application allow traffic"
   }
 }
 
@@ -103,11 +105,12 @@ resource "aws_security_group" "mongodb" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description      = "27017 from vpc"
+    description      = "27017 from application"
     from_port        = 27017
     to_port          = 27017
     protocol         = "tcp"
-    cidr_blocks      = ["10.0.0.0/16"]
+    #cidr_blocks      = ["10.0.0.0/16"]
+    security_groups  = [aws_security_group.application.id]
   }
 
   ingress {
@@ -126,6 +129,6 @@ resource "aws_security_group" "mongodb" {
   }
 
   tags = {
-    Name = "allow traffic"
+    Name = "database allow traffic"
   }
 }
