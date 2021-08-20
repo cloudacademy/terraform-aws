@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.51.0"
+      version = "~> 3.55.0"
     }
   }
 }
@@ -12,29 +12,8 @@ provider "aws" {
   region  = "us-west-2"
 }
 
-data "aws_availability_zones" "available" {
-  state = "available"
-}
-
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  # Canonical
-  owners = ["099720109477"]
-}
-
 resource "aws_vpc" "main" {
-  cidr_block       = "10.0.0.0/16"
+  cidr_block = "10.0.0.0/16"
 
   tags = {
     Name = "CloudAcademy"
@@ -43,9 +22,9 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_subnet" "subnet1" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = data.aws_availability_zones.available.names[0]
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = var.availability_zones[0]
 
   tags = {
     Name = "subnet1"
@@ -54,9 +33,9 @@ resource "aws_subnet" "subnet1" {
 }
 
 resource "aws_subnet" "subnet2" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = data.aws_availability_zones.available.names[1]
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = var.availability_zones[1]
 
   tags = {
     Name = "subnet2"
@@ -101,26 +80,26 @@ resource "aws_security_group" "webserver" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description      = "SSH from anywhere"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    description      = "80 from anywhere"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "80 from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -129,18 +108,24 @@ resource "aws_security_group" "webserver" {
 }
 
 resource "aws_instance" "web" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = var.instance_type
-  key_name      = var.key_name
-  
-  tags = {
-    Name = "CloudAcademy-Terraform"
-  }
+  ami             = var.amis[var.region]
+  instance_type   = var.instance_type
+  key_name        = var.key_name
+  subnet_id       = aws_subnet.subnet1.id
+  security_groups = [aws_security_group.webserver.id]
 
   associate_public_ip_address = true
 
-  subnet_id = aws_subnet.subnet1.id
-  security_groups = [aws_security_group.webserver.id]
+  user_data = <<EOF
+#!/bin/bash
+apt-get -y update
+apt-get -y install nginx
+service nginx start
+echo fin v1.00!
+EOF
 
-  user_data     = filebase64("${path.module}/install.sh")
+  tags = {
+    Name = "CloudAcademy"
+    Env  = "Dev"
+  }
 }

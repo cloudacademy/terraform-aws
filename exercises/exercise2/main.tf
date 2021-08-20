@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.51.0"
+      version = "~> 3.55.0"
     }
   }
 }
@@ -42,8 +42,8 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_subnet" "subnet1" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.1.0/24"
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
   availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
@@ -53,8 +53,8 @@ resource "aws_subnet" "subnet1" {
 }
 
 resource "aws_subnet" "subnet2" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.2.0/24"
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.2.0/24"
   availability_zone = data.aws_availability_zones.available.names[1]
 
   tags = {
@@ -64,8 +64,8 @@ resource "aws_subnet" "subnet2" {
 }
 
 resource "aws_subnet" "subnet3" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.3.0/24"
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.3.0/24"
   availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
@@ -75,8 +75,8 @@ resource "aws_subnet" "subnet3" {
 }
 
 resource "aws_subnet" "subnet4" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.4.0/24"
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.4.0/24"
   availability_zone = data.aws_availability_zones.available.names[1]
 
   tags = {
@@ -94,7 +94,7 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_eip" "nat" {
-  vpc      = true
+  vpc = true
 }
 
 resource "aws_nat_gateway" "nat" {
@@ -162,26 +162,26 @@ resource "aws_security_group" "webserver" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description      = "SSH from anywhere"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    description      = "80 from anywhere"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "80 from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -195,18 +195,18 @@ resource "aws_security_group" "alb" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description      = "80 from anywhere"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "80 from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    security_groups  = [aws_security_group.webserver.id]
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.webserver.id]
   }
 
   tags = {
@@ -216,14 +216,14 @@ resource "aws_security_group" "alb" {
 
 resource "aws_launch_template" "launchtemplate1" {
   name = "web"
-  
-  image_id = data.aws_ami.ubuntu.id
+
+  image_id      = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
-  key_name = "test"
+  key_name      = "test"
 
   network_interfaces {
     associate_public_ip_address = false
-    security_groups = [aws_security_group.webserver.id]
+    security_groups             = [aws_security_group.webserver.id]
   }
 
   //vpc_security_group_ids = [aws_security_group.webserver.id]
@@ -247,7 +247,7 @@ resource "aws_lb" "alb1" {
   subnets            = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]
 
   enable_deletion_protection = false
-  
+
   /*
   access_logs {
     bucket  = aws_s3_bucket.lb_logs.bucket
@@ -271,7 +271,7 @@ resource "aws_alb_listener" "front_end" {
   load_balancer_arn = aws_lb.alb1.arn
   port              = "80"
   protocol          = "HTTP"
-  
+
   default_action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.webserver.arn
@@ -283,7 +283,7 @@ resource "aws_alb_listener_rule" "rule1" {
   priority     = 99
 
   action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_alb_target_group.webserver.arn
   }
 
@@ -295,12 +295,12 @@ resource "aws_alb_listener_rule" "rule1" {
 }
 
 resource "aws_autoscaling_group" "asg" {
-  vpc_zone_identifier       = [aws_subnet.subnet3.id, aws_subnet.subnet4.id]
+  vpc_zone_identifier = [aws_subnet.subnet3.id, aws_subnet.subnet4.id]
 
-  desired_capacity   = 1
-  max_size           = 1
-  min_size           = 1
-  
+  desired_capacity = 1
+  max_size         = 1
+  min_size         = 1
+
   target_group_arns = [aws_alb_target_group.webserver.arn]
 
   launch_template {

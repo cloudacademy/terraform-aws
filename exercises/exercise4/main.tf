@@ -2,13 +2,13 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.51.0"
+      version = "~> 3.55.0"
     }
   }
 }
 
 provider "aws" {
-  profile = "default"
+  profile = "default1"
   region  = "us-west-2"
 }
 
@@ -17,8 +17,8 @@ provider "aws" {
 module "network" {
   source = "./modules/network"
 
-  availability_zones  = var.availability_zones
-  cidr_block          = var.cidr_block
+  availability_zones = var.availability_zones
+  cidr_block         = var.cidr_block
 }
 
 #====================================
@@ -26,8 +26,8 @@ module "network" {
 module "security" {
   source = "./modules/security"
 
-  vpc_id          = module.network.vpc_id
-  workstation_ip  = var.workstation_ip
+  vpc_id         = module.network.vpc_id
+  workstation_ip = var.workstation_ip
 
   depends_on = [
     module.network
@@ -39,10 +39,10 @@ module "security" {
 module "bastion" {
   source = "./modules/bastion"
 
-  instance_type   = var.bastion_instance_type
-  key_name        = var.key_name
-  subnet_id       = module.network.public_subnets[0]
-  sg_id           = module.security.bastion_sg_id
+  instance_type = var.bastion_instance_type
+  key_name      = var.key_name
+  subnet_id     = module.network.public_subnets[0]
+  sg_id         = module.security.bastion_sg_id
 
   depends_on = [
     module.network,
@@ -55,10 +55,10 @@ module "bastion" {
 module "storage" {
   source = "./modules/storage"
 
-  instance_type   = var.db_instance_type
-  key_name        = var.key_name
-  subnet_id       = module.network.private_subnets[0]
-  sg_id           = module.security.mongodb_sg_id
+  instance_type = var.db_instance_type
+  key_name      = var.key_name
+  subnet_id     = module.network.private_subnets[0]
+  sg_id         = module.security.mongodb_sg_id
 
   depends_on = [
     module.network,
