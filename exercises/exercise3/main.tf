@@ -228,7 +228,7 @@ resource "aws_launch_template" "launchtemplate1" {
     }
   }
 
-  user_data = filebase64("${path.module}/install.sh")
+  user_data = filebase64("${path.module}/ec2.userdata")
 }
 
 resource "aws_lb" "alb1" {

@@ -29,7 +29,8 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  # Canonical
+  owners = ["099720109477"] 
 }
 
 resource "aws_vpc" "main" {
@@ -227,8 +228,6 @@ resource "aws_launch_template" "launchtemplate1" {
     security_groups             = [aws_security_group.webserver.id]
   }
 
-  //vpc_security_group_ids = [aws_security_group.webserver.id]
-
   tag_specifications {
     resource_type = "instance"
 
@@ -237,7 +236,7 @@ resource "aws_launch_template" "launchtemplate1" {
     }
   }
 
-  user_data = filebase64("${path.module}/install.sh")
+  user_data = filebase64("${path.module}/ec2.userdata")
 }
 
 resource "aws_lb" "alb1" {
