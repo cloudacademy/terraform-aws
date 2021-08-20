@@ -29,7 +29,8 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  # Canonical
+  owners = ["099720109477"] 
 }
 
 resource "aws_vpc" "main" {
@@ -37,7 +38,7 @@ resource "aws_vpc" "main" {
   instance_tenancy = "default"
 
   tags = {
-    Name = "tfdemo"
+    Name = "CloudAcademy"
   }
 }
 
@@ -149,7 +150,7 @@ resource "aws_route_table_association" "private" {
 #====================================
 
 resource "aws_security_group" "webserver" {
-  name        = "webserver"
+  name        = "Webserver"
   description = "webserver network traffic"
   vpc_id      = aws_vpc.main.id
 
@@ -182,7 +183,7 @@ resource "aws_security_group" "webserver" {
 }
 
 resource "aws_security_group" "alb" {
-  name        = "alb"
+  name        = "ALB"
   description = "alb network traffic"
   vpc_id      = aws_vpc.main.id
 
@@ -206,7 +207,7 @@ resource "aws_security_group" "alb" {
   }
 }
 
-resource "aws_launch_template" "launchtemplate1" {
+resource "aws_launch_template" "webtemplate" {
   name = "web"
 
   image_id      = data.aws_ami.ubuntu.id
@@ -217,8 +218,6 @@ resource "aws_launch_template" "launchtemplate1" {
     associate_public_ip_address = false
     security_groups             = [aws_security_group.webserver.id]
   }
-
-  //vpc_security_group_ids = [aws_security_group.webserver.id]
 
   tag_specifications {
     resource_type = "instance"
@@ -296,7 +295,7 @@ resource "aws_autoscaling_group" "asg" {
   target_group_arns = [aws_alb_target_group.webserver.arn]
 
   launch_template {
-    id      = aws_launch_template.launchtemplate1.id
+    id      = aws_launch_template.webtemplate.id
     version = "$Latest"
   }
 }
