@@ -37,53 +37,41 @@ resource "aws_vpc" "main" {
   instance_tenancy = "default"
 
   tags = {
-    Name = "CloudAcademy"
+    Name = "tfdemo"
   }
 }
 
-resource "aws_subnet" "subnet1" {
+#====================================
+
+resource "aws_subnet" "public" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = data.aws_availability_zones.available.names[0]
+  count             = length(var.availability_zones)
+  cidr_block        = cidrsubnet(var.cidr_block, 8, count.index)
+  availability_zone = element(var.availability_zones, count.index)
+
+  map_public_ip_on_launch = true
 
   tags = {
-    Name = "Subnet1"
+    Name = "Public Subnet: ${element(var.availability_zones, count.index)}"
     Type = "Public"
   }
 }
 
-resource "aws_subnet" "subnet2" {
+resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = data.aws_availability_zones.available.names[1]
+  count             = length(var.availability_zones)
+  cidr_block        = cidrsubnet(var.cidr_block, 8, count.index + length(var.availability_zones))
+  availability_zone = element(var.availability_zones, count.index)
+
+  map_public_ip_on_launch = false
 
   tags = {
-    Name = "Subnet2"
-    Type = "Public"
-  }
-}
-
-resource "aws_subnet" "subnet3" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.3.0/24"
-  availability_zone = data.aws_availability_zones.available.names[0]
-
-  tags = {
-    Name = "Subnet3"
+    Name = "Private Subnet: ${element(var.availability_zones, count.index)}"
     Type = "Private"
   }
 }
 
-resource "aws_subnet" "subnet4" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.4.0/24"
-  availability_zone = data.aws_availability_zones.available.names[1]
-
-  tags = {
-    Name = "Subnet4"
-    Type = "Private"
-  }
-}
+#====================================
 
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
@@ -95,67 +83,70 @@ resource "aws_internet_gateway" "main" {
 }
 
 resource "aws_eip" "nat" {
-  vpc = true
+  count = length(var.availability_zones)
+  vpc   = true
 }
 
 resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.subnet1.id
+  count         = length(var.availability_zones)
+  subnet_id     = element(aws_subnet.public.*.id, count.index)
+  allocation_id = element(aws_eip.nat.*.id, count.index)
 
   tags = {
-    Name = "NAT"
+    "Name" = "NAT: ${element(var.availability_zones, count.index)}"
+    "Owner" = "CloudAcademy"
   }
 
-  # To ensure proper ordering, it is recommended to add an explicit dependency
-  # on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.main]
 }
 
-resource "aws_route_table" "rt1" {
-  vpc_id = aws_vpc.main.id
+#====================================
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
-  }
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
 
   tags = {
     Name = "Public"
   }
 }
 
-resource "aws_route_table" "rt2" {
-  vpc_id = aws_vpc.main.id
+resource "aws_route" "public_internet_gateway" {
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.main.id
+}
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.nat.id
-  }
+resource "aws_route_table_association" "public" {
+  count           = length(var.availability_zones)
+  subnet_id       = element(aws_subnet.public.*.id, count.index)
+  route_table_id  = aws_route_table.public.id
+}
+
+#====================================
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+  count  = length(var.availability_zones)
 
   tags = {
-    Name = "Private"
+    "Name" = "Private: ${element(var.availability_zones, count.index)}"
   }
 }
 
-resource "aws_route_table_association" "rta1" {
-  subnet_id      = aws_subnet.subnet1.id
-  route_table_id = aws_route_table.rt1.id
+resource "aws_route" "private_nat_gateway" {
+  count                   = "${length(var.availability_zones)}"
+  route_table_id          = element(aws_route_table.private.*.id, count.index)
+  destination_cidr_block  = "0.0.0.0/0"
+  nat_gateway_id          = element(aws_nat_gateway.nat.*.id, count.index)
 }
 
-resource "aws_route_table_association" "rta2" {
-  subnet_id      = aws_subnet.subnet2.id
-  route_table_id = aws_route_table.rt1.id
+resource "aws_route_table_association" "private" {
+  count           = length(var.availability_zones)
+  subnet_id       = element(aws_subnet.private.*.id, count.index)
+  route_table_id  = element(aws_route_table.private.*.id, count.index)
 }
 
-resource "aws_route_table_association" "rta3" {
-  subnet_id      = aws_subnet.subnet3.id
-  route_table_id = aws_route_table.rt2.id
-}
-
-resource "aws_route_table_association" "rta4" {
-  subnet_id      = aws_subnet.subnet4.id
-  route_table_id = aws_route_table.rt2.id
-}
+#====================================
 
 resource "aws_security_group" "webserver" {
   name        = "webserver"
@@ -167,7 +158,7 @@ resource "aws_security_group" "webserver" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.workstation_ip]
   }
 
   ingress {
@@ -245,7 +236,7 @@ resource "aws_lb" "alb1" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
-  subnets            = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]
+  subnets            = aws_subnet.public.*.id
 
   enable_deletion_protection = false
 
@@ -263,9 +254,9 @@ resource "aws_lb" "alb1" {
 }
 
 resource "aws_alb_target_group" "webserver" {
+  vpc_id   = aws_vpc.main.id
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
 }
 
 resource "aws_alb_listener" "front_end" {
@@ -296,11 +287,11 @@ resource "aws_alb_listener_rule" "rule1" {
 }
 
 resource "aws_autoscaling_group" "asg" {
-  vpc_zone_identifier = [aws_subnet.subnet3.id, aws_subnet.subnet4.id]
+  vpc_zone_identifier = aws_subnet.private.*.id
 
-  desired_capacity = 1
-  max_size         = 1
-  min_size         = 1
+  desired_capacity = 2
+  max_size         = 2
+  min_size         = 2
 
   target_group_arns = [aws_alb_target_group.webserver.arn]
 
