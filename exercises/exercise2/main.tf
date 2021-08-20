@@ -167,7 +167,7 @@ resource "aws_security_group" "webserver" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.workstation_ip]
   }
 
   ingress {
@@ -298,9 +298,9 @@ resource "aws_alb_listener_rule" "rule1" {
 resource "aws_autoscaling_group" "asg" {
   vpc_zone_identifier = [aws_subnet.subnet3.id, aws_subnet.subnet4.id]
 
-  desired_capacity = 1
-  max_size         = 1
-  min_size         = 1
+  desired_capacity = 2
+  max_size         = 2
+  min_size         = 2
 
   target_group_arns = [aws_alb_target_group.webserver.arn]
 
