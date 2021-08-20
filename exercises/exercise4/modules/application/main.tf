@@ -11,7 +11,8 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  # Canonical
+  owners = ["099720109477"]
 }
 
 #====================================
@@ -19,7 +20,8 @@ data "aws_ami" "ubuntu" {
 data "template_cloudinit_config" "config" {
   gzip          = false
   base64_encode = false
-  #first part of local config file
+  
+  #userdata
   part {
     content_type = "text/x-shellscript"
     content      = <<-EOF
@@ -85,7 +87,8 @@ resource "aws_launch_template" "apptemplate" {
     resource_type = "instance"
 
     tags = {
-      Name = "FrontendApp"
+      Name  = "FrontendApp"
+      Owner = "CloudAcademy"
     }
   }
 
@@ -112,20 +115,20 @@ resource "aws_lb" "alb1" {
   */
 
   tags = {
-    Environment = "production"
+    Environment = "Prod"
   }
 }
 
 resource "aws_alb_target_group" "webserver" {
+  vpc_id   = var.vpc_id
   port     = 80
   protocol = "HTTP"
-  vpc_id   = var.vpc_id
 }
 
 resource "aws_alb_target_group" "api" {
+  vpc_id   = var.vpc_id
   port     = 8080
   protocol = "HTTP"
-  vpc_id   = var.vpc_id
 }
 
 resource "aws_alb_listener" "front_end" {
@@ -201,8 +204,8 @@ resource "aws_autoscaling_group" "asg" {
 
 data "aws_instances" "application" {
   instance_tags = {
-    # Use whatever name you have given to your instances
-    Name = "FrontendApp"
+    Name  = "FrontendApp"
+    Owner = "CloudAcademy"
   }
 
   instance_state_names = ["pending", "running"]
