@@ -12,8 +12,7 @@ module "vpc" {
   enable_vpn_gateway = false
 
   tags = {
-    Owner = "CloudAcademy"
-    Terraform = "true"
-    Environment = "dev"
+    Name = "CloudAcademy"
+    Demo = "Terraform"
   }
 }

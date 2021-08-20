@@ -27,8 +27,8 @@ resource "aws_subnet" "subnet1" {
   availability_zone = var.availability_zones[0]
 
   tags = {
-    Name = "subnet1"
-    Type = "public"
+    Name = "Subnet1"
+    Type = "Public"
   }
 }
 
@@ -38,8 +38,8 @@ resource "aws_subnet" "subnet2" {
   availability_zone = var.availability_zones[1]
 
   tags = {
-    Name = "subnet2"
-    Type = "public"
+    Name = "Subnet2"
+    Type = "Public"
   }
 }
 
@@ -61,7 +61,7 @@ resource "aws_route_table" "rt1" {
   }
 
   tags = {
-    Name = "public"
+    Name = "Public"
   }
 }
 
@@ -76,8 +76,8 @@ resource "aws_route_table_association" "rta2" {
 }
 
 resource "aws_security_group" "webserver" {
-  name        = "webserver"
-  description = "webserver network traffic"
+  name        = "Webserver"
+  description = "Webserver network traffic"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -85,7 +85,7 @@ resource "aws_security_group" "webserver" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.workstation_ip]
   }
 
   ingress {
@@ -104,7 +104,7 @@ resource "aws_security_group" "webserver" {
   }
 
   tags = {
-    Name = "allow traffic"
+    Name = "Allow traffic"
   }
 }
 
@@ -127,6 +127,5 @@ EOF
 
   tags = {
     Name = "CloudAcademy"
-    Env  = "Dev"
   }
 }
