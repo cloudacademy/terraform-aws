@@ -1,10 +1,10 @@
 resource "aws_instance" "mongo" {
-	ami             = "ami-02868af3c3df4b3aa"
-	instance_type   = var.instance_type
-	key_name        = var.key_name
+  ami             = "ami-02868af3c3df4b3aa"
+  instance_type   = var.instance_type
+  key_name        = var.key_name
   subnet_id       = var.subnet_id
   security_groups = [var.sg_id]
-	
+
   /*
   user_data = << EOF
   #! /bin/bash
@@ -18,8 +18,8 @@ resource "aws_instance" "mongo" {
 
   user_data = filebase64("${path.module}/install.sh")
 
-	tags = {
-		Name = "Mongo"	
-		Owner = "CloudAcademy"
-	}
+  tags = {
+    Name  = "Mongo"
+    Owner = "CloudAcademy"
+  }
 }  

@@ -20,7 +20,7 @@ data "aws_ami" "ubuntu" {
 data "template_cloudinit_config" "config" {
   gzip          = false
   base64_encode = false
-  
+
   #userdata
   part {
     content_type = "text/x-shellscript"
@@ -73,14 +73,14 @@ data "template_cloudinit_config" "config" {
 
 resource "aws_launch_template" "apptemplate" {
   name = "application"
-  
-  image_id        = data.aws_ami.ubuntu.id
-	instance_type   = var.instance_type
-	key_name        = var.key_name
+
+  image_id      = data.aws_ami.ubuntu.id
+  instance_type = var.instance_type
+  key_name      = var.key_name
 
   network_interfaces {
     associate_public_ip_address = false
-    security_groups = [var.webserver_sg_id]
+    security_groups             = [var.webserver_sg_id]
   }
 
   tag_specifications {
@@ -92,7 +92,7 @@ resource "aws_launch_template" "apptemplate" {
     }
   }
 
-  user_data = "${base64encode(data.template_cloudinit_config.config.rendered)}"
+  user_data = base64encode(data.template_cloudinit_config.config.rendered)
 }
 
 #====================================
@@ -105,7 +105,7 @@ resource "aws_lb" "alb1" {
   subnets            = var.public_subnets
 
   enable_deletion_protection = false
-  
+
   /*
   access_logs {
     bucket  = aws_s3_bucket.lb_logs.bucket
@@ -135,7 +135,7 @@ resource "aws_alb_listener" "front_end" {
   load_balancer_arn = aws_lb.alb1.arn
   port              = "80"
   protocol          = "HTTP"
-  
+
   default_action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.webserver.arn
@@ -146,7 +146,7 @@ resource "aws_alb_listener" "api" {
   load_balancer_arn = aws_lb.alb1.arn
   port              = "8080"
   protocol          = "HTTP"
-  
+
   default_action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.api.arn
@@ -158,7 +158,7 @@ resource "aws_alb_listener_rule" "frontend_rule1" {
   priority     = 99
 
   action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_alb_target_group.webserver.arn
   }
 
@@ -174,7 +174,7 @@ resource "aws_alb_listener_rule" "api_rule1" {
   priority     = 99
 
   action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_alb_target_group.api.arn
   }
 
@@ -190,10 +190,10 @@ resource "aws_alb_listener_rule" "api_rule1" {
 resource "aws_autoscaling_group" "asg" {
   vpc_zone_identifier = var.private_subnets
 
-  desired_capacity    = var.asg_desired
-  max_size            = var.asg_max_size
-  min_size            = var.asg_min_size
-  
+  desired_capacity = var.asg_desired
+  max_size         = var.asg_max_size
+  min_size         = var.asg_min_size
+
   target_group_arns = [aws_alb_target_group.webserver.arn, aws_alb_target_group.api.arn]
 
   launch_template {

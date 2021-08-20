@@ -30,7 +30,7 @@ data "aws_ami" "ubuntu" {
   }
 
   # Canonical
-  owners = ["099720109477"] 
+  owners = ["099720109477"]
 }
 
 resource "aws_vpc" "main" {
