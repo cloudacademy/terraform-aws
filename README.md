@@ -11,6 +11,15 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise1
 
 ![AWS Architecture](./doc/AWS-VPC-Nginx.png)
 
+#### Project Structure
+
+```
+├── main.tf
+├── outputs.tf
+├── terraform.tfvars
+└── variables.tf
+```
+
 ### Exercise 2
 Create an advanced AWS VPC spanning 2 AZs with both public and private subnets. An internet gateway and NAT gateway will be deployed into it. Public and private route tables will be established. An application load balancer (ALB) will be installed which will load balance traffic across an auto scaling group (ASG) of Nginx web servers. Security groups will be created and deployed to secure all network traffic between the various components.
 
@@ -18,12 +27,32 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise2
 
 ![AWS Architecture](./doc/AWS-VPC-ASG-Nginx.png)
 
+#### Project Structure
+
+```
+├── ec2.userdata
+├── main.tf
+├── outputs.tf
+├── terraform.tfvars
+└── variables.tf
+```
+
 ### Exercise 3
 Same AWS architecture as used in Exercise 2. This exercise demonstrates a different Terraform technique, using the Terraform "count" meta argument, for configuring the public and private subnets as well as their respective route tables.
 
 https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise3
 
 ![AWS Architecture](./doc/AWS-VPC-ASG-Nginx.png)
+
+#### Project Structure
+
+```
+├── ec2.userdata
+├── main.tf
+├── outputs.tf
+├── terraform.tfvars
+└── variables.tf
+```
 
 ### Exercise 4
 Create an advanced AWS VPC to host a fully functioning cloud native application. 
@@ -41,3 +70,35 @@ The auto scaling web application layer bootstraps itself with both the [Frontend
 * Frontend: https://github.com/cloudacademy/voteapp-frontend-react-2020/releases/latest
 
 * API: https://github.com/cloudacademy/voteapp-api-go/releases/latest
+
+#### Project Structure
+
+```
+├── main.tf
+├── modules
+│   ├── application
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── vars.tf
+│   ├── bastion
+│   │   ├── install.sh
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── vars.tf
+│   ├── network
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── vars.tf
+│   ├── security
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── vars.tf
+│   └── storage
+│       ├── install.sh
+│       ├── main.tf
+│       ├── outputs.tf
+│       └── vars.tf
+├── outputs.tf
+├── terraform.tfvars
+└── variables.tf
+```
