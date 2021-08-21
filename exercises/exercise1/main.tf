@@ -117,6 +117,7 @@ resource "aws_instance" "web" {
 
   associate_public_ip_address = true
 
+  #userdata
   user_data = <<EOF
 #!/bin/bash
 apt-get -y update
