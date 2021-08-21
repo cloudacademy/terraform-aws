@@ -14,3 +14,35 @@ The auto scaling web application layer bootstraps itself with both the [Frontend
 * Frontend: https://github.com/cloudacademy/voteapp-frontend-react-2020/releases/latest
 
 * API: https://github.com/cloudacademy/voteapp-api-go/releases/latest
+
+#### Project Structure
+
+```
+├── main.tf
+├── modules
+│   ├── application
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── vars.tf
+│   ├── bastion
+│   │   ├── install.sh
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── vars.tf
+│   ├── network
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── vars.tf
+│   ├── security
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── vars.tf
+│   └── storage
+│       ├── install.sh
+│       ├── main.tf
+│       ├── outputs.tf
+│       └── vars.tf
+├── outputs.tf
+├── terraform.tfvars
+└── variables.tf
+```

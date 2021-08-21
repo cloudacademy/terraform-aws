@@ -4,3 +4,13 @@ Same AWS architecture as used in Exercise 2. This exercise demonstrates a differ
 https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise3
 
 ![AWS Architecture](/doc/AWS-VPC-ASG-Nginx.png)
+
+#### Project Structure
+
+```
+├── ec2.userdata
+├── main.tf
+├── outputs.tf
+├── terraform.tfvars
+└── variables.tf
+```

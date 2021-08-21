@@ -4,3 +4,11 @@ Create an advanced AWS VPC spanning 2 AZs with both public and private subnets. 
 https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise2
 
 ![AWS Architecture](/doc/AWS-VPC-ASG-Nginx.png)
+
+```
+├── ec2.userdata
+├── main.tf
+├── outputs.tf
+├── terraform.tfvars
+└── variables.tf
+```
