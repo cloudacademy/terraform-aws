@@ -25,7 +25,6 @@ The auto scaling web application layer bootstraps itself with both the [Frontend
 │   │   ├── outputs.tf
 │   │   └── vars.tf
 │   ├── bastion
-│   │   ├── install.sh
 │   │   ├── main.tf
 │   │   ├── outputs.tf
 │   │   └── vars.tf
