@@ -32,7 +32,7 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise4
 
 ![AWS Architecture](./doc/AWS-VPC-FullApp.png)
 
-The auto scaling web application layer bootstraps itself with both the frontend and api components by pulling down the latest respective releases from the following repos:
+The auto scaling web application layer bootstraps itself with both the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2020) and [API](https://github.com/cloudacademy/voteapp-api-go) components by pulling down the latest respective releases from the following repos:
 
 * Frontend: https://github.com/cloudacademy/voteapp-frontend-react-2020/releases/latest
 
