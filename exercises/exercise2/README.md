@@ -5,6 +5,8 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise2
 
 ![AWS Architecture](/doc/AWS-VPC-ASG-Nginx.png)
 
+#### Project Structure
+
 ```
 ├── ec2.userdata
 ├── main.tf
