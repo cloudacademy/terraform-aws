@@ -26,7 +26,11 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise3
 ![AWS Architecture](./doc/AWS-VPC-ASG-Nginx.png)
 
 ### Exercise 4
-Create an advanced AWS VPC to host a fully functioning cloud native application. The VPC will span 2 AZs, and have both public and private subnets. An internet gateway and NAT gateway will be deployed into it. Public and private route tables will be established. An application load balancer (ALB) will be installed which will load balance traffic across an auto scaling group (ASG) of Nginx web servers installed with the cloud native application frontend and API. A database instance running MongoDB will be installed in the private zone.
+Create an advanced AWS VPC to host a fully functioning cloud native application. 
+
+![Cloud Native Application](./doc/voteapp.png)
+
+The VPC will span 2 AZs, and have both public and private subnets. An internet gateway and NAT gateway will be deployed into it. Public and private route tables will be established. An application load balancer (ALB) will be installed which will load balance traffic across an auto scaling group (ASG) of Nginx web servers installed with the cloud native application frontend and API. A database instance running MongoDB will be installed in the private zone.
 
 https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise4
 
