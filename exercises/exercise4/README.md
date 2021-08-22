@@ -75,7 +75,7 @@ data "template_cloudinit_config" "config" {
 
 #### ALB Target Group Configuration
 
-The ALB will configured with a single Listener listening on port 80. 2 target groups will be established. The frontend target group points to the Nginx web server (port 80). The API target group points to the custom API service (port 8080). 
+The ALB will configured with a single listener (port 80). 2 target groups will be established. The frontend target group points to the Nginx web server (port 80). The API target group points to the custom API service (port 8080). 
 
 ![AWS Architecture](/doc/AWS-VPC-FullApp-TargetGrps.png)
 
