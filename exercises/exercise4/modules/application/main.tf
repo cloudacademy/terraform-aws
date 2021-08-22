@@ -46,7 +46,7 @@ data "template_cloudinit_config" "config" {
     rm -rf /var/www/html
     cp -R build /var/www/html
     cat > /var/www/html/env-config.js << EOFF
-    window._env_ = {REACT_APP_APIHOSTPORT: "$ALB_DNS:8080"}
+    window._env_ = {REACT_APP_APIHOSTPORT: "$ALB_DNS"}
     EOFF
     popd
 
@@ -142,46 +142,39 @@ resource "aws_alb_listener" "front_end" {
   }
 }
 
-resource "aws_alb_listener" "api" {
-  load_balancer_arn = aws_lb.alb1.arn
-  port              = "8080"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_alb_target_group.api.arn
-  }
-}
-
 resource "aws_alb_listener_rule" "frontend_rule1" {
   listener_arn = aws_alb_listener.front_end.arn
-  priority     = 99
+  priority     = 100
+
+  condition {
+    path_pattern {
+      values = ["/"]
+    }
+  }
 
   action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.webserver.arn
   }
-
-  condition {
-    path_pattern {
-      values = ["/"]
-    }
-  }
 }
 
 resource "aws_alb_listener_rule" "api_rule1" {
-  listener_arn = aws_alb_listener.api.arn
-  priority     = 99
+  listener_arn = aws_alb_listener.front_end.arn
+  priority     = 10
+
+  condition {
+    path_pattern {
+      values = [
+        "/languages",
+        "/languages/*",
+        "/languages/*/*"
+      ]
+    }
+  }
 
   action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.api.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/"]
-    }
   }
 }
 
