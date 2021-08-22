@@ -73,7 +73,7 @@ The auto scaling web application layer bootstraps itself with both the [Frontend
 
 * API: https://github.com/cloudacademy/voteapp-api-go/releases/latest
 
-The bootstrapping process for the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2020) and [API](https://github.com/cloudacademy/voteapp-api-go) components is codified within a ```template_cloudinit_config``` block locaated in the application module's [main.tf](./modules/application/main.tf) file:
+The bootstrapping process for the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2020) and [API](https://github.com/cloudacademy/voteapp-api-go) components is codified within a ```template_cloudinit_config``` block located in the application module's [main.tf](./modules/application/main.tf) file:
 
 ```terraform
 data "template_cloudinit_config" "config" {
