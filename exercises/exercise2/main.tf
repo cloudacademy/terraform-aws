@@ -11,10 +11,6 @@ provider "aws" {
   region = "us-west-2"
 }
 
-data "aws_availability_zones" "available" {
-  state = "available"
-}
-
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -45,7 +41,7 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "subnet1" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.1.0/24"
-  availability_zone = data.aws_availability_zones.available.names[0]
+  availability_zone = var.availability_zones[0]
 
   tags = {
     Name = "Subnet1"
@@ -56,7 +52,7 @@ resource "aws_subnet" "subnet1" {
 resource "aws_subnet" "subnet2" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.2.0/24"
-  availability_zone = data.aws_availability_zones.available.names[1]
+  availability_zone = var.availability_zones[1]
 
   tags = {
     Name = "Subnet2"
@@ -67,7 +63,7 @@ resource "aws_subnet" "subnet2" {
 resource "aws_subnet" "subnet3" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.3.0/24"
-  availability_zone = data.aws_availability_zones.available.names[0]
+  availability_zone = var.availability_zones[0]
 
   tags = {
     Name = "Subnet3"
@@ -78,7 +74,7 @@ resource "aws_subnet" "subnet3" {
 resource "aws_subnet" "subnet4" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.4.0/24"
-  availability_zone = data.aws_availability_zones.available.names[1]
+  availability_zone = var.availability_zones[1]
 
   tags = {
     Name = "Subnet4"
