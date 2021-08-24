@@ -74,14 +74,10 @@ data "template_cloudinit_config" "config" {
 resource "aws_launch_template" "apptemplate" {
   name = "application"
 
-  image_id      = data.aws_ami.ubuntu.id
-  instance_type = var.instance_type
-  key_name      = var.key_name
-
-  network_interfaces {
-    associate_public_ip_address = false
-    security_groups             = [var.webserver_sg_id]
-  }
+  image_id               = data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [var.webserver_sg_id]
 
   tag_specifications {
     resource_type = "instance"
@@ -123,6 +119,14 @@ resource "aws_alb_target_group" "webserver" {
   vpc_id   = var.vpc_id
   port     = 80
   protocol = "HTTP"
+
+  health_check {
+    path                = "/"
+    interval            = 10
+    healthy_threshold   = 3
+    unhealthy_threshold = 6
+    timeout             = 5
+  }
 }
 
 resource "aws_alb_target_group" "api" {
@@ -132,9 +136,10 @@ resource "aws_alb_target_group" "api" {
 
   health_check {
     path                = "/ok"
-    interval            = 5
+    interval            = 10
     healthy_threshold   = 3
     unhealthy_threshold = 6
+    timeout             = 5
   }
 }
 
