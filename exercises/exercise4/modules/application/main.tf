@@ -129,6 +129,13 @@ resource "aws_alb_target_group" "api" {
   vpc_id   = var.vpc_id
   port     = 8080
   protocol = "HTTP"
+
+  health_check {
+    path                = "/ok"
+    interval            = 5
+    healthy_threshold   = 3
+    unhealthy_threshold = 6
+  }
 }
 
 resource "aws_alb_listener" "front_end" {
@@ -167,7 +174,8 @@ resource "aws_alb_listener_rule" "api_rule1" {
       values = [
         "/languages",
         "/languages/*",
-        "/languages/*/*"
+        "/languages/*/*",
+        "/ok"
       ]
     }
   }
