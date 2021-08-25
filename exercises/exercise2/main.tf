@@ -172,7 +172,10 @@ resource "aws_security_group" "webserver" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [
+      cidrsubnet(var.cidr_block, 8, 1),
+      cidrsubnet(var.cidr_block, 8, 2)
+    ]
   }
 
   egress {
