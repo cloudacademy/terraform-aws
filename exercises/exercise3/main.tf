@@ -159,11 +159,14 @@ resource "aws_security_group" "webserver" {
   }
 
   ingress {
-    description = "80 from anywhere"
+    description = "80 from public subnets"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [
+      #10.0.0.0/23 covers both pubic subnets
+      cidrsubnet(var.cidr_block, 7, 0)
+    ]
   }
 
   egress {
@@ -210,10 +213,6 @@ resource "aws_launch_template" "webtemplate" {
   instance_type          = var.instance_type
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.webserver.id]
-
-  network_interfaces {
-    associate_public_ip_address = false
-  }
 
   tag_specifications {
     resource_type = "instance"
