@@ -223,10 +223,6 @@ resource "aws_launch_template" "launchtemplate1" {
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.webserver.id]
 
-  network_interfaces {
-    associate_public_ip_address = false
-  }
-
   tag_specifications {
     resource_type = "instance"
 
