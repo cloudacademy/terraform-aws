@@ -1,4 +1,3 @@
-![Build Status](https://github.com/cloudacademy/terraform-aws/actions/workflows/go.yml/badge.svg)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/cloudacademy/terraform-aws)
 
 # CloudAcademy Terraform 1.x AWS Course
