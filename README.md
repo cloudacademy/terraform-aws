@@ -22,24 +22,20 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise1
 └── variables.tf
 ```
 
-**Note**: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address)
+#### TF Variable Notes
 
-When it comes to setting the Terraform `workstation_ip` variable - this can be accomplished multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
+- `workstation_ip`: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address).
 
-**Linux**
-```
-export TF_VAR_workstation_ip=202.10.23.16/32
-```
+  - When it comes to setting the Terraform `workstation_ip` variable - this can be accomplished multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
 
-**Windows**
-```
-set TF_VAR_workstation_ip=202.10.23.16/32
-```
+  - **Linux**: `export TF_VAR_workstation_ip=202.10.23.16/32`
 
-FYI - Terraform environment variables are documented here:
+  - **Windows**: `set TF_VAR_workstation_ip=202.10.23.16/32`
+
+- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time, and then replace the name within the Terraform `key_name` variable located within the **terraform.tfvars** file.
+
+- Terraform environment variables are documented here:
 [https://www.terraform.io/cli/config/environment-variables](https://www.terraform.io/cli/config/environment-variables)
-
-The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time, and then replace the name within the Terraform `key_name` variable located within the **terraform.tfvars** file.
 
 ### Exercise 2
 Create an advanced AWS VPC spanning 2 AZs with both public and private subnets. An internet gateway and NAT gateway will be deployed into it. Public and private route tables will be established. An application load balancer (ALB) will be installed which will load balance traffic across an auto scaling group (ASG) of Nginx web servers. Security groups will be created and deployed to secure all network traffic between the various components.
@@ -58,24 +54,20 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise2
 └── variables.tf
 ```
 
-**Note**: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address)
+#### TF Variable Notes
 
-When it comes to setting the Terraform `workstation_ip` variable - this can be accomplished multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
+- `workstation_ip`: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address).
 
-**Linux**
-```
-export TF_VAR_workstation_ip=202.10.23.16/32
-```
+  - When it comes to setting the Terraform `workstation_ip` variable - this can be accomplished multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
 
-**Windows**
-```
-set TF_VAR_workstation_ip=202.10.23.16/32
-```
+  - **Linux**: `export TF_VAR_workstation_ip=202.10.23.16/32`
 
-FYI - Terraform environment variables are documented here:
+  - **Windows**: `set TF_VAR_workstation_ip=202.10.23.16/32`
+
+- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time, and then replace the name within the Terraform `key_name` variable located within the **terraform.tfvars** file.
+
+- Terraform environment variables are documented here:
 [https://www.terraform.io/cli/config/environment-variables](https://www.terraform.io/cli/config/environment-variables)
-
-The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time, and then replace the name within the Terraform `key_name` variable located within the **terraform.tfvars** file.
 
 ### Exercise 3
 Same AWS architecture as used in Exercise 2. This exercise demonstrates a different Terraform technique, using the Terraform "count" meta argument, for configuring the public and private subnets as well as their respective route tables.
@@ -94,24 +86,20 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise3
 └── variables.tf
 ```
 
-**Note**: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address)
+#### TF Variable Notes
 
-When it comes to setting the Terraform `workstation_ip` variable - this can be accomplished multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
+- `workstation_ip`: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address).
 
-**Linux**
-```
-export TF_VAR_workstation_ip=202.10.23.16/32
-```
+  - When it comes to setting the Terraform `workstation_ip` variable - this can be accomplished multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
 
-**Windows**
-```
-set TF_VAR_workstation_ip=202.10.23.16/32
-```
+  - **Linux**: `export TF_VAR_workstation_ip=202.10.23.16/32`
 
-FYI - Terraform environment variables are documented here:
+  - **Windows**: `set TF_VAR_workstation_ip=202.10.23.16/32`
+
+- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time, and then replace the name within the Terraform `key_name` variable located within the **terraform.tfvars** file.
+
+- Terraform environment variables are documented here:
 [https://www.terraform.io/cli/config/environment-variables](https://www.terraform.io/cli/config/environment-variables)
-
-The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time, and then replace the name within the Terraform `key_name` variable located within the **terraform.tfvars** file.
 
 ### Exercise 4
 Create an advanced AWS VPC to host a fully functioning cloud native application.
@@ -225,21 +213,18 @@ The ALB will configured with a single listener (port 80). 2 target groups will b
 └── variables.tf
 ```
 
-**Note**: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address)
+#### TF Variable Notes
 
-When it comes to setting the Terraform `workstation_ip` variable - this can be accomplished multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
+- `workstation_ip`: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address).
 
-**Linux**
-```
-export TF_VAR_workstation_ip=202.10.23.16/32
-```
+  - When it comes to setting the Terraform `workstation_ip` variable - this can be accomplished multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
 
-**Windows**
-```
-set TF_VAR_workstation_ip=202.10.23.16/32
-```
+  - **Linux**: `export TF_VAR_workstation_ip=202.10.23.16/32`
 
-FYI - Terraform environment variables are documented here:
+  - **Windows**: `set TF_VAR_workstation_ip=202.10.23.16/32`
+
+- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time, and then replace the name within the Terraform `key_name` variable located within the **terraform.tfvars** file.
+
+- Terraform environment variables are documented here:
 [https://www.terraform.io/cli/config/environment-variables](https://www.terraform.io/cli/config/environment-variables)
 
-The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time, and then replace the name within the Terraform `key_name` variable located within the **terraform.tfvars** file.
