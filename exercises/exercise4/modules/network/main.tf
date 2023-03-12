@@ -1,7 +1,7 @@
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
-  name = "CloudAcademy"
+  name = "HOFFSTER"
   cidr = var.cidr_block
 
   azs             = var.availability_zones
@@ -12,7 +12,7 @@ module "vpc" {
   enable_vpn_gateway = false
 
   tags = {
-    Name = "CloudAcademy"
+    Name = "HOFFSTER"
     Demo = "Terraform"
   }
 }

@@ -84,7 +84,7 @@ resource "aws_launch_template" "apptemplate" {
 
     tags = {
       Name  = "FrontendApp"
-      Owner = "CloudAcademy"
+      Owner = "HOFFSTER"
     }
   }
 
@@ -211,7 +211,7 @@ resource "aws_autoscaling_group" "asg" {
 data "aws_instances" "application" {
   instance_tags = {
     Name  = "FrontendApp"
-    Owner = "CloudAcademy"
+    Owner = "HOFFSTER"
   }
 
   instance_state_names = ["pending", "running"]
