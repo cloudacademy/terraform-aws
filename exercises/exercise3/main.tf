@@ -33,7 +33,7 @@ resource "aws_vpc" "main" {
   instance_tenancy = "default"
 
   tags = {
-    Name = "CloudAcademy"
+    Name = "Hoffster"
     Demo = "Terraform"
   }
 }
@@ -75,7 +75,7 @@ resource "aws_internet_gateway" "main" {
 
   tags = {
     "Name"  = "Main"
-    "Owner" = "CloudAcademy"
+    "Owner" = "Hoffster"
   }
 }
 
@@ -91,7 +91,7 @@ resource "aws_nat_gateway" "nat" {
 
   tags = {
     "Name"  = "NAT: ${element(var.availability_zones, count.index)}"
-    "Owner" = "CloudAcademy"
+    "Owner" = "Hoffster"
   }
 
   depends_on = [aws_internet_gateway.main]
