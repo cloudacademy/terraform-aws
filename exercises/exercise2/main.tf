@@ -33,7 +33,7 @@ resource "aws_vpc" "main" {
   instance_tenancy = "default"
 
   tags = {
-    Name = "CloudAcademy"
+    Name = "4Hoff"
     Demo = "Terraform"
   }
 }
@@ -87,7 +87,7 @@ resource "aws_internet_gateway" "main" {
 
   tags = {
     "Name"  = "Main"
-    "Owner" = "CloudAcademy"
+    "Owner" = "Hoffster"
   }
 }
 
