@@ -8,14 +8,14 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-west-2"
+  region = "us-east-2"
 }
 
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "CloudAcademy"
+    Name = "4Hoff"
     Demo = "Terraform"
   }
 }
@@ -119,13 +119,13 @@ resource "aws_instance" "web" {
   #userdata
   user_data = <<EOF
 #!/bin/bash
-apt-get -y update
-apt-get -y install nginx
+yum -y update
+sudo amazon-linux-extras install nginx1 -y
 service nginx start
 echo fin v1.00!
 EOF
 
   tags = {
-    Name = "CloudAcademy"
+    Name = "4hoff"
   }
 }
