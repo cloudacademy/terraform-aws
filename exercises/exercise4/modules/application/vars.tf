@@ -1,11 +1,34 @@
-variable "instance_type" {}
-variable "key_name" {}
-variable "vpc_id" {}
-variable "public_subnets" {}
-variable "private_subnets" {}
-variable "webserver_sg_id" {}
-variable "alb_sg_id" {}
-variable "mongodb_ip" {}
+variable "instance_type" {
+  type = string
+}
+
+variable "key_name" {
+  type = string
+}
+
+variable "vpc_id" {
+  type = string
+}
+
+variable "public_subnets" {
+  type = list(any)
+}
+
+variable "private_subnets" {
+  type = list(any)
+}
+
+variable "webserver_sg_id" {
+  type = string
+}
+
+variable "alb_sg_id" {
+  type = string
+}
+
+variable "mongodb_ip" {
+  type = string
+}
 
 variable "asg_desired" {
   type    = number
@@ -19,4 +42,3 @@ variable "asg_min_size" {
   type    = number
   default = 2
 }
-  

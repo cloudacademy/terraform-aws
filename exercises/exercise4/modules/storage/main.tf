@@ -1,3 +1,13 @@
+terraform {
+  required_version = "~> 1.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "4.60.0"
+    }
+  }
+}
+
 resource "aws_instance" "mongo" {
   ami                    = "ami-02868af3c3df4b3aa"
   instance_type          = var.instance_type

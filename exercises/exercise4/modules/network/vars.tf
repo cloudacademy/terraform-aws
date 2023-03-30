@@ -1,2 +1,7 @@
-variable "availability_zones" {}
-variable "cidr_block" {}
+variable "availability_zones" {
+  type = list(any)
+}
+
+variable "cidr_block" {
+  type = string
+}

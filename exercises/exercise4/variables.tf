@@ -6,11 +6,6 @@ variable "workstation_ip" {
   type = string
 }
 
-variable "environment" {
-  type    = string
-  default = "demo"
-}
-
 variable "cidr_block" {
   type        = string
   description = "VPC cidr block. Example: 10.10.0.0/16"

@@ -1,3 +1,17 @@
+terraform {
+  required_version = "~> 1.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "4.60.0"
+    }
+    template = {
+      source  = "hashicorp/template"
+      version = "2.2.0"
+    }
+  }
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -38,10 +52,10 @@ data "template_cloudinit_config" "config" {
 
     echo ===========================
     echo FRONTEND - download latest release and install...
-    mkdir -p ./voteapp-frontend-react-2020
-    pushd ./voteapp-frontend-react-2020
-    curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2020/releases/latest | jq -r '.assets[0].browser_download_url' | xargs curl -OL
-    INSTALL_FILENAME=$(curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2020/releases/latest | jq -r '.assets[0].name')
+    mkdir -p ./voteapp-frontend-react-2023
+    pushd ./voteapp-frontend-react-2023
+    curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2023/releases/latest | jq -r '.assets[0].browser_download_url' | xargs curl -OL
+    INSTALL_FILENAME=$(curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2023/releases/latest | jq -r '.assets[0].name')
     tar -xvzf $INSTALL_FILENAME
     rm -rf /var/www/html
     cp -R build /var/www/html

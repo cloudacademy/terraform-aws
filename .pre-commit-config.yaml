@@ -1,7 +1,13 @@
 repos:
-  - repo: https://github.com/gruntwork-io/pre-commit
-    rev: v0.1.19
+  # - repo: https://github.com/terraform-docs/terraform-docs
+  #   rev: "v0.16.0"
+  #   hooks:
+  #     - id: terraform-docs-go
+  #       args: ["markdown", "table", "--output-file", "README.md", "./"]
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: "v1.77.1"
     hooks:
-      - id: terraform-fmt
-      - id: terraform-validate
-      - id: tflint
+      - id: terraform_fmt
+      - id: terraform_tflint
+      - id: terraform_validate
+      # - id: terraform_tfsec

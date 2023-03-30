@@ -1,5 +1,16 @@
+terraform {
+  required_version = "~> 1.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "4.60.0"
+    }
+  }
+}
+
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "3.19.0"
 
   name = "CloudAcademy"
   cidr = var.cidr_block
