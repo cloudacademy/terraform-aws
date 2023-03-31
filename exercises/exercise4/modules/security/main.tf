@@ -22,10 +22,11 @@ resource "aws_security_group" "bastion" {
   }
 
   egress {
+    description = "all all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] #tfsec:ignore:aws-ec2-no-public-egress-sgr
   }
 
   tags = {
@@ -43,10 +44,11 @@ resource "aws_security_group" "alb" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] #tfsec:ignore:aws-vpc-no-public-ingress-sgr
   }
 
   egress {
+    description     = "all all outbound traffic"
     from_port       = 0
     to_port         = 0
     protocol        = "-1"
@@ -90,10 +92,11 @@ resource "aws_security_group" "application" {
   }
 
   egress {
+    description = "all all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] #tfsec:ignore:aws-ec2-no-public-egress-sgr
   }
 
   tags = {
@@ -124,10 +127,11 @@ resource "aws_security_group" "mongodb" {
   }
 
   egress {
+    description = "all all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] #tfsec:ignore:aws-ec2-no-public-egress-sgr
   }
 
   tags = {

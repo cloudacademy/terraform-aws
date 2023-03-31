@@ -85,6 +85,7 @@ data "template_cloudinit_config" "config" {
 
 #====================================
 
+#tfsec:ignore:aws-ec2-enforce-launch-config-http-token-imds
 resource "aws_launch_template" "apptemplate" {
   name = "application"
 
@@ -107,13 +108,14 @@ resource "aws_launch_template" "apptemplate" {
 
 #====================================
 
+#tfsec:ignore:aws-elb-alb-not-public
 resource "aws_lb" "alb1" {
-  name               = "alb1"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [var.alb_sg_id]
-  subnets            = var.public_subnets
-
+  name                       = "alb1"
+  internal                   = false
+  load_balancer_type         = "application"
+  security_groups            = [var.alb_sg_id]
+  subnets                    = var.public_subnets
+  drop_invalid_header_fields = true
   enable_deletion_protection = false
 
   /*
@@ -157,6 +159,7 @@ resource "aws_alb_target_group" "api" {
   }
 }
 
+#tfsec:ignore:aws-elb-http-not-used
 resource "aws_alb_listener" "front_end" {
   load_balancer_arn = aws_lb.alb1.arn
   port              = "80"

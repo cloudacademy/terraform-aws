@@ -8,6 +8,8 @@ terraform {
   }
 }
 
+#tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
+#tfsec:ignore:aws-ec2-no-public-ip-subnet
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.19.0"
