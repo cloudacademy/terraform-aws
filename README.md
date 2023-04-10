@@ -247,7 +247,7 @@ The auto scaling web application layer bootstraps itself with both the [Frontend
 
 * API: https://github.com/cloudacademy/voteapp-api-go/releases/latest
 
-The bootstrapping process for the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2023) and [API](https://github.com/cloudacademy/voteapp-api-go) components is now performed by Ansible. An Ansible playbook is executed from within the root [main.tf](./main.tf) file:
+The bootstrapping process for the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2023) and [API](https://github.com/cloudacademy/voteapp-api-go) components is now performed by Ansible. An Ansible playbook is executed from within the root [main.tf](.exercises/exercise5/main.tf) file:
 
 ```terraform
 resource "null_resource" "ansible" {
