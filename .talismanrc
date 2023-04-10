@@ -1,0 +1,12 @@
+fileignoreconfig:
+- filename: exercises/exercise5/ansible/playbooks/database.yml
+  checksum: 14bbe840a5fc4d4b8b4edf50ea20916cff0224339498fa7ac9a2b4d78fd4b48b
+- filename: exercises/exercise5/main.tf
+  checksum: 4cac9e387f2c8a2a78a99e4deba478371f7dde530f686a69e67836568f68a116
+- filename: exercises/exercise5/modules/bastion/main.tf
+  checksum: ca67bf882bc7974d5daa787837fb12cc091586e3c1773d7407111f355a846ef9
+- filename: exercises/exercise5/modules/application/main.tf
+  checksum: c0353fe90df4e1a2e9c649b466a41989d6d043fe9a4129ccc69d1e7a12ae4fec
+- filename: exercises/exercise5/modules/storage/main.tf
+  checksum: ad13fff6c1201ed1ec92ebc73b20f39f55f3e2522add670e781244523d8fd520
+version: ""

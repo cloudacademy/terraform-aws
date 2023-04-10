@@ -37,3 +37,7 @@ terraform.rc
 
 .DS_Store
 **/.DS_Store
+
+**/ansible/hosts
+**/ansible/ssh_config
+**/ansible/logs/ansible.log

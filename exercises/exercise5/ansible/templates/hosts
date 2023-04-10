@@ -1,0 +1,14 @@
+[bastion]
+BASTION_IP
+
+[web]
+WEB_IPS
+
+[web:vars]
+ansible_ssh_common_args = '-F ./ssh_config'
+
+[mongo]
+MONGO_IP
+
+[mongo:vars]
+ansible_ssh_common_args = '-F ./ssh_config'

@@ -1,0 +1,12 @@
+Host 10.0.* !BASTION_IP
+   ProxyJump BASTION_IP
+Host 10.0.*
+   User ubuntu
+   StrictHostKeyChecking no
+   UserKnownHostsFile /dev/null
+   IdentityFile ~/.ssh/SSH_KEY_NAME.pem
+Host BASTION_IP
+   User ubuntu
+   StrictHostKeyChecking no
+   UserKnownHostsFile /dev/null
+   IdentityFile ~/.ssh/SSH_KEY_NAME.pem

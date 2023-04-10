@@ -1,0 +1,38 @@
+---
+- hosts: web
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: update apt
+    apt:
+      update_cache: true
+      cache_valid_time: 3600
+      force_apt_get: true
+
+  - name: install jq
+    apt:
+      name: jq
+      state: present
+
+  - name: ensure nginx is at the latest version
+    apt: name=nginx state=latest
+  - name: start nginx
+    service:
+        name: nginx
+        state: started
+
+  - name: transfer install api script
+    copy: src=api.sh dest=/tmp mode=0777
+
+  - name: execute api install script
+    command: sh /tmp/api.sh
+
+  - name: start api service in background
+    shell: MONGO_CONN_STR=mongodb://{{ MONGODB_PRIVATEIP }}:27017/langdb nohup /tmp/cloudacademy-app/voteapp-api-go/api </dev/null >/dev/null 2>&1 &
+
+  - name: transfer install frontend script
+    copy: src=frontend.sh dest=/tmp mode=0777
+
+  - name: execute frontend install script
+    command: sh /tmp/frontend.sh {{ ALB_DNS }}

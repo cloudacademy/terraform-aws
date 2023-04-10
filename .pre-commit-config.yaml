@@ -11,3 +11,9 @@ repos:
       - id: terraform_tflint
       - id: terraform_validate
       - id: terraform_tfsec
+
+  - repo: https://github.com/thoughtworks/talisman
+    rev: "v1.30.2"
+    hooks:
+    - id: talisman-commit
+      entry: cmd --githook pre-commit

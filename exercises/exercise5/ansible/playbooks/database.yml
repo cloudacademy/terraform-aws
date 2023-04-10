@@ -1,0 +1,11 @@
+---
+- hosts: mongo
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: transfer install db script
+    copy: src=db.sh dest=/tmp mode=0777
+
+  - name: execute db install script
+    command: sh /tmp/db.sh
