@@ -237,7 +237,7 @@ The VPC will span 2 AZs, and have both public and private subnets. An internet g
 
 For demonstration purposes only - both the frontend and the API will be deployed to the same set of ASG instances - to reduce running costs.
 
-https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise4
+https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise5
 
 ![AWS Architecture](/doc/AWS-VPC-FullApp.png)
 
