@@ -1,8 +1,9 @@
 terraform {
+  required_version = "~> 1.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "3.66.0"
+      version = "4.60.0"
     }
   }
 }
@@ -94,7 +95,9 @@ resource "aws_nat_gateway" "nat" {
     "Owner" = "CloudAcademy"
   }
 
-  depends_on = [aws_internet_gateway.main]
+  depends_on = [
+    aws_internet_gateway.main
+  ]
 }
 
 #====================================
@@ -145,9 +148,9 @@ resource "aws_route_table_association" "private" {
 
 #====================================
 
-resource "aws_security_group" "webserver" {
-  name        = "Webserver"
-  description = "webserver network traffic"
+resource "aws_security_group" "bastion" {
+  name        = "Bastion"
+  description = "ssh network traffic"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -156,6 +159,31 @@ resource "aws_security_group" "webserver" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.workstation_ip]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "allow traffic"
+  }
+}
+
+resource "aws_security_group" "webserver" {
+  name        = "Webserver"
+  description = "webserver network traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description     = "SSH from bastion"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.bastion.id]
   }
 
   ingress {
@@ -180,6 +208,28 @@ resource "aws_security_group" "webserver" {
     Name = "allow traffic"
   }
 }
+
+#====================================
+
+resource "aws_instance" "bastion" {
+  ami                         = "ami-02868af3c3df4b3aa"
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
+  subnet_id                   = aws_subnet.public[0].id
+  vpc_security_group_ids      = [aws_security_group.bastion.id]
+  associate_public_ip_address = true
+  root_block_device {
+    volume_size = 10
+    encrypted   = true
+  }
+
+  tags = {
+    Name  = "Bastion"
+    Owner = "CloudAcademy"
+  }
+}
+
+#====================================
 
 resource "aws_security_group" "alb" {
   name        = "ALB"
@@ -293,4 +343,20 @@ resource "aws_autoscaling_group" "asg" {
     id      = aws_launch_template.webtemplate.id
     version = "$Latest"
   }
+
+  depends_on = [
+    aws_nat_gateway.nat
+  ]
+}
+
+#====================================
+
+data "aws_instances" "webserver" {
+  instance_tags = {
+    Name = "WebServer"
+  }
+
+  depends_on = [
+    aws_autoscaling_group.asg
+  ]
 }
