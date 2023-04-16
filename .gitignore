@@ -41,3 +41,5 @@ terraform.rc
 **/ansible/hosts
 **/ansible/ssh_config
 **/ansible/logs/ansible.log
+
+**/inspec.lock
