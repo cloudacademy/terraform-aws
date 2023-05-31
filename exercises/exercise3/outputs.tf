@@ -32,3 +32,8 @@ output "webserver_private_ips" {
   description = "webserver private ips"
   value       = data.aws_instances.webserver.private_ips
 }
+
+output "web_app_wait_command" {
+  value       = "until curl --max-time 5 http://${aws_lb.alb1.dns_name} >/dev/null 2>&1; do echo preparing...; sleep 5; done; echo; echo -e 'Ready!!'"
+  description = "Test command - tests readiness of the web app"
+}

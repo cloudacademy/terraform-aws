@@ -1,9 +1,9 @@
 terraform {
-  required_version = "~> 1.0"
+  required_version = ">= 1.4.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.60.0"
+      version = ">= 5.0.0"
     }
   }
 }
@@ -81,8 +81,8 @@ resource "aws_internet_gateway" "main" {
 }
 
 resource "aws_eip" "nat" {
-  count = length(var.availability_zones)
-  vpc   = true
+  count  = length(var.availability_zones)
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "nat" {

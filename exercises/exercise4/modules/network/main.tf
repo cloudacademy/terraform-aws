@@ -1,9 +1,9 @@
 terraform {
-  required_version = "~> 1.0"
+  required_version = ">= 1.4.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.60.0"
+      version = ">= 5.0.0"
     }
   }
 }
@@ -12,7 +12,7 @@ terraform {
 #tfsec:ignore:aws-ec2-no-public-ip-subnet
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "3.19.0"
+  version = "5.0.0"
 
   name = "CloudAcademy"
   cidr = var.cidr_block
