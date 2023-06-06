@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: cloudacademy
+  labels:
+    role: db
+    env: demo
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      role: db
+  template:
+    metadata:
+      labels:
+        role: db
+    spec:
+      containers:
+      - name: db
+        image: cloudacademydevops/stocks-db:v1
+        imagePullPolicy: Always
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: fo11owth3wh1t3r4bb1t
+        ports:
+        - containerPort: 3306
+      tolerations:
+      - key: "eks.amazonaws.com/compute-type"
+        operator: "Equal"
+        value: "fargate"
+        effect: "NoSchedule"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: cloudacademy
+  labels:
+    role: db
+    env: demo
+spec:
+  ports:
+   - protocol: TCP
+     port: 3306
+  selector:
+    role: db

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: cloudacademy
+  labels:
+    role: frontend
+    env: demo
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      role: frontend
+  template:
+    metadata:
+      labels:
+        role: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: cloudacademydevops/stocks-app:v1
+        imagePullPolicy: Always
+        env:
+          - name: REACT_APP_APIHOSTPORT
+            value: API_HOST_INGRESS_FQDN
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: cloudacademy
+  labels:
+    role: frontend
+    env: demo
+spec:
+  ports:
+   - protocol: TCP
+     port: 8080
+  selector:
+    role: frontend
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend
+  namespace: cloudacademy
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: FRONTEND_HOST_INGRESS_FQDN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 8080

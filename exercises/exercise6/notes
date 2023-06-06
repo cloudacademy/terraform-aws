@@ -1,0 +1,53 @@
+aws eks update-kubeconfig --region us-west-2 --name cloudacademydevops-eks
+
+kubectl get nodes
+
+===================
+
+kubectl create ns cloudacademy
+kubectl config set-context --current --namespace=cloudacademy
+kubectl config get-contexts
+
+===================
+
+kubectl get ns
+kubectl get pods -n nginx-ingress
+
+===================
+
+INGRESS_LB_FQDN=$(kubectl get svc nginx-ingress-controller -n nginx-ingress -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
+echo $INGRESS_LB_FQDN
+
+INGRESS_PUBLIC_IP=$(dig +short $INGRESS_LB_FQDN | head -n1)
+echo $INGRESS_PUBLIC_IP
+
+API_PUBLIC_FQDN=cloudacademy.api.$INGRESS_PUBLIC_IP.nip.io
+FRONTEND_PUBLIC_FQDN=cloudacademy.frontend.$INGRESS_PUBLIC_IP.nip.io
+
+echo $API_PUBLIC_FQDN
+echo $FRONTEND_PUBLIC_FQDN
+
+===========================
+
+sed \
+-e "s/API_HOST_INGRESS_FQDN/${API_PUBLIC_FQDN}/g" \
+./k8s/templates/2_api.yaml > ./k8s/manifests/2_api.yaml
+
+sed \
+-e "s/API_HOST_INGRESS_FQDN/${API_PUBLIC_FQDN}/g" \
+-e "s/FRONTEND_HOST_INGRESS_FQDN/${FRONTEND_PUBLIC_FQDN}/g" \
+./k8s/templates/3_frontend.yaml > ./k8s/manifests/3_frontend.yaml
+
+===========================
+
+curl -s $API_PUBLIC_FQDN/api/stocks/csv
+
+===========================
+
+kubectl apply -f ./k8s/manifests/
+
+watch -n5 "kubectl get pods"
+
+curl -i http://$FRONTEND_PUBLIC_FQDN
+
+echo "http://$FRONTEND_PUBLIC_FQDN"
