@@ -1,3 +1,9 @@
+terraform init
+terraform validate
+teraform apply -auto-approve
+
+===================
+
 aws eks update-kubeconfig --region us-west-2 --name cloudacademydevops-eks
 
 kubectl get nodes
