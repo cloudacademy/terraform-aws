@@ -10,6 +10,10 @@ terraform {
       source  = "hashicorp/helm"
       version = ">= 2.10.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.2.0"
+    }
   }
 }
 
@@ -22,6 +26,7 @@ data "aws_availability_zones" "available" {}
 locals {
   name        = "cloudacademydevops"
   environment = "demo"
+  k8s_version = "1.27"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -31,7 +36,7 @@ locals {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 4.0"
+  version = ">= 5.0.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -46,11 +51,20 @@ module "vpc" {
   one_nat_gateway_per_az = false
 
   manage_default_network_acl    = true
-  default_network_acl_tags      = { Name = "${local.name}-default" }
   manage_default_route_table    = true
-  default_route_table_tags      = { Name = "${local.name}-default" }
   manage_default_security_group = true
-  default_security_group_tags   = { Name = "${local.name}-default" }
+
+  default_network_acl_tags = {
+    Name = "${local.name}-default"
+  }
+
+  default_route_table_tags = {
+    Name = "${local.name}-default"
+  }
+
+  default_security_group_tags = {
+    Name = "${local.name}-default"
+  }
 
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
@@ -73,11 +87,10 @@ module "eks" {
   version = ">= 19.15.0"
 
   cluster_name    = "${local.name}-eks"
-  cluster_version = "1.27"
+  cluster_version = local.k8s_version
 
   cluster_endpoint_public_access = true
 
-  # EKS Addons
   cluster_addons = {
     coredns    = {}
     kube-proxy = {}
@@ -160,3 +173,22 @@ resource "helm_release" "nginx_ingress" {
 #   #   value = "nginx-ingress-controller"
 #   # }
 # }
+
+resource "null_resource" "deploy_app" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    working_dir = path.module
+    command     = <<EOT
+      echo deploying app...
+      ./k8s/app.install.sh
+    EOT
+  }
+
+  depends_on = [
+    helm_release.nginx_ingress
+  ]
+}
