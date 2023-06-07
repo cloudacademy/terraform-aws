@@ -12,7 +12,6 @@ kubectl get nodes
 
 kubectl create ns cloudacademy
 kubectl config set-context --current --namespace=cloudacademy
-kubectl config get-contexts
 
 ===================
 
@@ -46,11 +45,11 @@ sed \
 
 ===========================
 
-curl -s $API_PUBLIC_FQDN/api/stocks/csv
+kubectl apply -f ./k8s/manifests/
 
 ===========================
 
-kubectl apply -f ./k8s/manifests/
+curl -s $API_PUBLIC_FQDN/api/stocks/csv
 
 watch -n5 "kubectl get pods"
 
