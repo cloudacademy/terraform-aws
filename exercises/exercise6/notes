@@ -49,9 +49,9 @@ kubectl apply -f ./k8s/manifests/
 
 ===========================
 
-curl -s $API_PUBLIC_FQDN/api/stocks/csv
-
 watch -n5 "kubectl get pods"
+
+curl -s $API_PUBLIC_FQDN/api/stocks/csv
 
 curl -i http://$FRONTEND_PUBLIC_FQDN
 
