@@ -1,0 +1,10 @@
+cat windows-key-pair.pem | pbcopy
+
+systeminfo | findstr /B "Domain"
+
+==================
+
+EC2 Userdata debugging
+
+Note: By default, C:\ProgramData is a hidden folder.
+C:\ProgramData\Amazon\EC2Launch\log\agent.log
