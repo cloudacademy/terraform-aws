@@ -5,23 +5,30 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 5.0.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.5.0"
+    }
     template = {
       source  = "hashicorp/template"
-      version = "2.2.0"
+      version = ">= 2.2.0"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "4.0.4"
+      version = ">= 4.0.0"
     }
   }
+}
+
+provider "aws" {
+  region = "us-east-1"
 }
 
 data "aws_availability_zones" "available" {}
 
 locals {
-  region      = "us-east-1"
-  environment = "prod"
-
+  environment         = "prod"
+  secret_id           = "ad-domain-admin"
   domain_name         = "demo.cloudacademydevops.internal"
   domain_netbios_name = "CADEVOPS"
   domain_computer_ou  = "ou=demo,dc=cloudacademydevops,dc=internal"
@@ -30,9 +37,29 @@ locals {
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 }
 
-provider "aws" {
-  region = local.region
+//========================================
+
+resource "random_password" "ad_admin_password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
 }
+
+resource "aws_secretsmanager_secret" "ad_domain" {
+  name = local.secret_id
+}
+
+resource "aws_secretsmanager_secret_version" "ad_creds" {
+  secret_id     = aws_secretsmanager_secret.ad_domain.id
+  secret_string = <<EOF
+{
+  "username": "admin",
+  "password": "${random_password.ad_admin_password.result}"
+}
+EOF
+}
+
+//========================================
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -63,7 +90,7 @@ module "ad" {
   computer_ou = local.domain_computer_ou
 
   edition        = "Standard"
-  admin_password = "0potC2Xk2X74%#!t"
+  admin_password = random_password.ad_admin_password.result
   vpc_id         = module.vpc.vpc_id
   subnet_ids     = module.vpc.private_subnets
 }
@@ -132,6 +159,7 @@ resource "aws_security_group" "windows-sg" {
   name        = "windows-sg"
   description = "Allow incoming connections"
   vpc_id      = module.vpc.vpc_id
+
   ingress {
     from_port   = 80
     to_port     = 80
@@ -139,6 +167,7 @@ resource "aws_security_group" "windows-sg" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow incoming HTTP connections"
   }
+
   ingress {
     from_port   = 3389
     to_port     = 3389
@@ -146,12 +175,14 @@ resource "aws_security_group" "windows-sg" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow incoming RDP connections"
   }
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = {
     Name = "windows-sg"
     Env  = local.environment
@@ -159,9 +190,9 @@ resource "aws_security_group" "windows-sg" {
 }
 
 data "template_file" "server" {
-  template = file("${path.root}/join.ps1")
+  template = file("${path.root}/domain-join.ps1")
   vars = {
-    ad_secret_id = "AD/ServiceAccounts/DomainJoin"
+    ad_secret_id = local.secret_id
     ad_domain    = local.domain_name
   }
 }
@@ -206,12 +237,14 @@ resource "aws_instance" "server" {
     volume_type           = var.windows_data_volume_type
     delete_on_termination = true
   }
-  tags = {
-    Name = "cloudacademydemo-vm1"
-    Env  = local.environment
-  }
+
   volume_tags = {
     Name = "cloudacademydemo-vol1"
+    Env  = local.environment
+  }
+
+  tags = {
+    Name = "cloudacademydemo-vm1"
     Env  = local.environment
   }
 
