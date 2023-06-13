@@ -1,0 +1,21 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - echo "install step"
+  pre_build:
+    commands:
+      - echo "pre_build step"
+      - cd ./stocks-api
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+  build:
+    commands:
+      - echo "build step"
+      - mvn -B package spring-boot:repackage -DskipTests
+  post_build:
+    commands:
+      - echo "post_build step"
+      - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com
+      - docker build -t stocks-api .
+      - docker tag stocks-api:latest $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/stocks-api:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/stocks-api:latest

@@ -1,0 +1,10 @@
+cd ./stocks
+git init
+git remote add -f stocks https://git-codecommit.us-west-2.amazonaws.com/v1/repos/stocks
+
+{
+git checkout -b main
+git add .
+git commit -m "initial commit"
+git push --set-upstream stocks main
+}
