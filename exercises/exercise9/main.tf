@@ -5,31 +5,27 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 5.0.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.2.0"
+    }
   }
-}
-
-provider "aws" {
-  region = "us-west-2"
 }
 
 //========================================
 
-module "stocks_cicd" {
-  source = "./modules/cicd"
-
-  repo_name           = "stocks"
-  repo_default_branch = "main"
-
-  region                    = "us-west-2"
-  build_timeout             = "5"
-  build_compute_type        = "BUILD_GENERAL1_SMALL"
-  build_image               = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
-  build_privileged_override = true
-  buildspec_stocks_api      = "./stocks-api/buildspec.yml"
-  buildspec_stocks_app      = "./stocks-app/buildspec.yml"
-  buildspec_stocks_db       = "./stocks-db/buildspec.yml"
-  force_artifact_destroy    = true
+locals {
+  repo_name = "stocks"
+  region    = "us-west-2"
 }
+
+//========================================
+
+provider "aws" {
+  region = local.region
+}
+
+//========================================
 
 resource "aws_ecr_repository" "stocks-api" {
   name         = "stocks-api"
@@ -44,6 +40,25 @@ resource "aws_ecr_repository" "stocks-app" {
 resource "aws_ecr_repository" "stocks-db" {
   name         = "stocks-db"
   force_delete = true
+}
+
+//========================================
+
+module "stocks_cicd" {
+  source = "./modules/cicd"
+
+  repo_name           = local.repo_name
+  repo_default_branch = "main"
+
+  region                    = local.region
+  build_timeout             = "5"
+  build_compute_type        = "BUILD_GENERAL1_SMALL"
+  build_image               = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+  build_privileged_override = true
+  buildspec_stocks_api      = "./stocks-api/buildspec.yml"
+  buildspec_stocks_app      = "./stocks-app/buildspec.yml"
+  buildspec_stocks_db       = "./stocks-db/buildspec.yml"
+  force_artifact_destroy    = true
 }
 
 resource "aws_iam_role_policy" "codebuild_policy" {
@@ -69,4 +84,27 @@ resource "aws_iam_role_policy" "codebuild_policy" {
   ]
 }
 POLICY
+}
+
+//========================================
+
+resource "null_resource" "stocks_source_code" {
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    working_dir = path.module
+    command     = <<EOT
+      echo loading source code...
+      cd ./stocks
+      git init
+      git remote add -f ${local.repo_name} https://git-codecommit.${local.region}.amazonaws.com/v1/repos/${local.repo_name}
+      git checkout -b main
+      git add .
+      git commit -m "initial commit"
+      git push --set-upstream ${local.repo_name} main
+    EOT
+  }
+
+  depends_on = [
+    module.stocks_cicd
+  ]
 }
