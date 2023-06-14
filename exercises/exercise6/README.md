@@ -1,4 +1,4 @@
-### Exercise 6
+## Exercise 6
 Launch an EKS cluster and deploy a pre-built cloud native web app.
 
 ![EKS Cloud Native Application](/doc/eks.png)
