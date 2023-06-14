@@ -378,7 +378,7 @@ Additionally, the following **providers** are utilised:
 
 The EKS cluster will be provisioned with 2 worker nodes based on m5.large **spot** instances. This configuration is suitable for the demonstration purposes of this exercise. Production environments are likely more suited to **on-demand always on** instances.
 
-The cloud native web app deployed is configured within the `./k8s` directory, and is installed automaticalling using the following null resource configuration:
+The cloud native web app deployed is configured within the `./k8s` directory, and is installed automatically using the following null resource configuration:
 
 ```terraform
 resource "null_resource" "deploy_app" {
