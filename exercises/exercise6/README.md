@@ -5,8 +5,8 @@ Launch an EKS cluster and deploy a pre-built cloud native web app.
 
 The cloud native web app that gets deployed is based on the following codebase:
 
-- [Stocks App](https://github.com/cloudacademy/stocks-app)
-- [Stocks API](https://github.com/cloudacademy/stocks-api)
+- https://github.com/cloudacademy/stocks-app
+- https://github.com/cloudacademy/stocks-api
 
 The following public AWS **modules** are used to launch the EKS cluster:
 
