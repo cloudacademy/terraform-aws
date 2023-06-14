@@ -1,6 +1,10 @@
 ## Exercise 6
 Launch an EKS cluster and deploy a pre-built cloud native web app.
 
+![Stocks App](/doc/stocks.png)
+
+The following EKS architecture will be provisioned using Terraform:
+
 ![EKS Cloud Native Application](/doc/eks.png)
 
 The cloud native web app that gets deployed is based on the following codebase:
