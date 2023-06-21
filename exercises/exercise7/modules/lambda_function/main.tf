@@ -4,7 +4,7 @@ data "archive_file" "lambda" {
   output_path = var.zip_file_name
 }
 
-resource "aws_lambda_function" "bitcoin" {
+resource "aws_lambda_function" "lambda" {
   function_name    = var.name
   filename         = var.zip_file_name
   source_code_hash = data.archive_file.lambda.output_base64sha256
@@ -14,8 +14,8 @@ resource "aws_lambda_function" "bitcoin" {
   timeout          = var.timeout
 }
 
-resource "aws_lambda_function_url" "bitcoin" {
-  function_name      = aws_lambda_function.bitcoin.function_name
+resource "aws_lambda_function_url" "lambda" {
+  function_name      = aws_lambda_function.lambda.function_name
   authorization_type = "NONE"
 
   cors {

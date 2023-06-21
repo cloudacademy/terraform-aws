@@ -11,21 +11,21 @@ variable "lambda_functions" {
     {
       name          = "bitcoin"
       source_file   = "./fns/bitcoin/code/lambda_function.py"
-      zip_file_name = "fn.bitcoin.zip"
+      zip_file_name = "./archive/fn.bitcoin.zip"
       timeout       = 60
       runtime       = "python3.9"
     },
     {
       name          = "hello"
       source_file   = "./fns/hello/code/lambda_function.py"
-      zip_file_name = "fn.hello.zip"
+      zip_file_name = "./archive/fn.hello.zip"
       timeout       = 60
       runtime       = "python3.9"
     },
     {
       name          = "pi"
       source_file   = "./fns/pi/code/lambda_function.py"
-      zip_file_name = "fn.pi.zip"
+      zip_file_name = "./archive/fn.pi.zip"
       timeout       = 60
       runtime       = "python3.9"
     }
