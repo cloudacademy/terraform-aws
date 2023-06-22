@@ -13,7 +13,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-2"
+  region = "us-west-2"
 }
 
 data "aws_iam_policy_document" "lambda_assume_role_policy" {
