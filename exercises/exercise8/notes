@@ -1,6 +1,7 @@
-cat windows-key-pair.pem | pbcopy
+Login as the domain admin
 
-systeminfo | findstr /B "Domain"
+admin@CADEVOPS
+terraform output --raw domain_admin_password
 
 ==================
 
@@ -9,9 +10,6 @@ EC2 Userdata debugging
 Note: By default, C:\ProgramData is a hidden folder.
 C:\ProgramData\Amazon\EC2Launch\log\agent.log
 
-Windows Server login creds
+==================
 
-Login as the domain admin
-
-admin@CADEVOPS
-terraform output --raw domain_admin_password
+systeminfo | findstr /B "Domain"
