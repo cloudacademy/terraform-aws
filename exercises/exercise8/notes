@@ -10,5 +10,8 @@ Note: By default, C:\ProgramData is a hidden folder.
 C:\ProgramData\Amazon\EC2Launch\log\agent.log
 
 Windows Server login creds
-user: administrator
-password: terraform output windows_admin_password
+
+Login as the domain admin
+
+admin@CADEVOPS
+terraform output --raw domain_admin_password
