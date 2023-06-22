@@ -21,14 +21,28 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "us-west-2"
 }
 
 data "aws_availability_zones" "available" {}
 
+//========================================
+
+resource "random_password" "ad_admin_password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
+resource "random_password" "secret_name_suffix" {
+  length  = 4
+  special = false
+  numeric = false
+}
+
 locals {
   environment         = "prod"
-  secret_id           = "ad-domain-admin"
+  secret_id           = "ad-domain-admin-${random_password.secret_name_suffix.result}"
   domain_name         = "demo.cloudacademydevops.internal"
   domain_netbios_name = "CADEVOPS"
   domain_computer_ou  = "ou=demo,dc=cloudacademydevops,dc=internal"
@@ -38,12 +52,6 @@ locals {
 }
 
 //========================================
-
-resource "random_password" "ad_admin_password" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
-}
 
 resource "aws_secretsmanager_secret" "ad_domain" {
   name = local.secret_id
@@ -81,6 +89,8 @@ module "vpc" {
     Env  = local.environment
   }
 }
+
+//========================================
 
 module "ad" {
   source = "./modules/ad"
@@ -225,12 +235,12 @@ resource "aws_instance" "server" {
   ami                         = data.aws_ami.windows-2022.id
   instance_type               = var.windows_instance_type
   subnet_id                   = module.vpc.public_subnets[0]
-  associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.windows-sg.id]
-  source_dest_check           = false
   key_name                    = aws_key_pair.key_pair.key_name
-  user_data                   = data.template_file.server.rendered
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.id
+  source_dest_check           = false
+  associate_public_ip_address = true
+  get_password_data           = true
 
   root_block_device {
     volume_size           = var.windows_root_volume_size
@@ -242,6 +252,9 @@ resource "aws_instance" "server" {
     Name = "cloudacademydemo-vol1"
     Env  = local.environment
   }
+
+  #DOMAIN JOIN SCRIPT
+  user_data = data.template_file.server.rendered
 
   tags = {
     Name = "cloudacademydemo-vm1"
