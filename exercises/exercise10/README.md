@@ -19,14 +19,14 @@ Initialising a new project (empty) can be accomplised by running the following c
 ```
 {
 mkdir new-project && cd new-project
-cdktf init --template="typescript" --providers="aws@~>4.0" --local
+cdktf init --template="typescript" --providers="aws@>=5.0" --local
 npm install
 }
 ```
 
 #### Infrastructure Deployment
 
-To provision infrastructure using Terraform CDK, update the **main.ts** Typescript file with your infrastructure code and then run the following command:
+To provision infrastructure using the Terraform CDK, update the newly generated **main.ts** Typescript file with your infrastructure code and then run the following command:
 
 ```
 cdktf deploy
@@ -34,7 +34,7 @@ cdktf deploy
 
 #### Infrastructure Destroy
 
-Remember to teardown/destroy any environments created when no longed needed. Run the following command
+Remember to teardown/destroy any environments created when no longed needed. To perform a teardown, run the following command
 
 ```
 cdktf destroy
