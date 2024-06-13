@@ -232,7 +232,7 @@ resource "aws_launch_template" "launchtemplate1" {
 }
 
 resource "aws_lb" "alb1" {
-  name               = "alb1"
+  name               = "alb1v2"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
