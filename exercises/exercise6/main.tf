@@ -10,10 +10,10 @@ terraform {
       source  = "hashicorp/helm"
       version = ">= 2.10.0"
     }
-    null = {
-      source  = "hashicorp/null"
-      version = ">= 3.2.0"
-    }
+    # null = {
+    #   source  = "hashicorp/null"
+    #   version = ">= 3.2.0"
+    # }
   }
 }
 
@@ -86,7 +86,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = ">= 19.15.0"
 
-  cluster_name    = "${local.name}-eks"
+  cluster_name    = "${local.name}-eks-2025"
   cluster_version = local.k8s_version
 
   cluster_endpoint_public_access = true
@@ -105,7 +105,8 @@ module "eks" {
       use_custom_launch_template = false
 
       instance_types = ["m5.large"]
-      capacity_type  = "SPOT"
+      capacity_type  = "SPOT" # useful for demos and dev purposes
+      # capacity_type = "ON_DEMAND"
 
       disk_size = 10
 
@@ -174,8 +175,8 @@ resource "helm_release" "nginx_ingress" {
 #   # }
 # }
 
-resource "null_resource" "deploy_app" {
-  triggers = {
+resource "terraform_data" "deploy_app" {
+  triggers_replace = {
     always_run = "${timestamp()}"
   }
 
