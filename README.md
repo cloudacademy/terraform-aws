@@ -2,7 +2,7 @@
 
 # CloudAcademy Terraform 1.x AWS Course
 
-This repo contains example Terraform configurations for building AWS infrastructure.
+This repo contains example Terraform projects for building AWS infrastructure. The example Terraform projects are catalogued into a set of AWS exercises, graduating in complexity as you work through them.
 
 ## AWS Exercises
 
@@ -455,10 +455,10 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise7
 
 Two Lambda functions are provisioned — `hello` and `pi` — each exposed through both a direct **Lambda Function URL** and an **API Gateway v2 HTTP API** route:
 
-| Function | API Gateway Route | Description |
-|---|---|---|
-| `hello` | `GET /hello?name=<value>` | Returns a greeting message, optionally personalised with a `name` query parameter |
-| `pi` | `GET /pi?num=<value>` | Calculates and returns π to `num` decimal places using an iterative digit-extraction algorithm |
+| Function | API Gateway Route         | Description                                                                                    |
+| -------- | ------------------------- | ---------------------------------------------------------------------------------------------- |
+| `hello`  | `GET /hello?name=<value>` | Returns a greeting message, optionally personalised with a `name` query parameter              |
+| `pi`     | `GET /pi?num=<value>`     | Calculates and returns π to `num` decimal places using an iterative digit-extraction algorithm |
 
 Both functions run on the **Python 3.14** runtime and are packaged from source at apply time using the `hashicorp/archive` provider.
 
