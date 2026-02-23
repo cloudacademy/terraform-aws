@@ -24,15 +24,15 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise1
 
 #### TF Variable Notes
 
-- `workstation_ip`: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address).
+> **Note**: SSH access is automatically restricted to your current machine's public IP address, dynamically detected at `terraform plan`/`apply` time using the `hashicorp/http` provider and `http://checkip.amazonaws.com`. No `workstation_ip` variable is required.
 
-- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
+- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the instance(s) provisioned by Terraform. You will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
 
-  - The required Terraform `workstation_ip` and `key_name` variables can be established multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
+  - The required Terraform `key_name` variable can be established by prefixing the variable name with `TF_VAR_` and setting it as an environment variable within your shell:
 
-  - **Linux**: `export TF_VAR_workstation_ip=202.10.23.16/32` and `export TF_VAR_key_name=your_ssh_key_name`
+  - **Linux**: `export TF_VAR_key_name=your_ssh_key_name`
 
-  - **Windows**: `set TF_VAR_workstation_ip=202.10.23.16/32` and `set TF_VAR_key_name=your_ssh_key_name`
+  - **Windows**: `set TF_VAR_key_name=your_ssh_key_name`
 
 - Terraform environment variables are documented here:
 [https://www.terraform.io/cli/config/environment-variables](https://www.terraform.io/cli/config/environment-variables)
@@ -56,15 +56,15 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise2
 
 #### TF Variable Notes
 
-- `workstation_ip`: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address).
+> **Note**: SSH access is automatically restricted to your current machine's public IP address, dynamically detected at `terraform plan`/`apply` time using the `hashicorp/http` provider and `http://checkip.amazonaws.com`. No `workstation_ip` variable is required.
 
-- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
+- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the instance(s) provisioned by Terraform. You will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
 
-  - The required Terraform `workstation_ip` and `key_name` variables can be established multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
+  - The required Terraform `key_name` variable can be established by prefixing the variable name with `TF_VAR_` and setting it as an environment variable within your shell:
 
-  - **Linux**: `export TF_VAR_workstation_ip=202.10.23.16/32` and `export TF_VAR_key_name=your_ssh_key_name`
+  - **Linux**: `export TF_VAR_key_name=your_ssh_key_name`
 
-  - **Windows**: `set TF_VAR_workstation_ip=202.10.23.16/32` and `set TF_VAR_key_name=your_ssh_key_name`
+  - **Windows**: `set TF_VAR_key_name=your_ssh_key_name`
 
 - Terraform environment variables are documented here:
 [https://www.terraform.io/cli/config/environment-variables](https://www.terraform.io/cli/config/environment-variables)
@@ -88,15 +88,15 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise3
 
 #### TF Variable Notes
 
-- `workstation_ip`: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address).
+> **Note**: SSH access is automatically restricted to your current machine's public IP address, dynamically detected at `terraform plan`/`apply` time using the `hashicorp/http` provider and `http://checkip.amazonaws.com`. No `workstation_ip` variable is required.
 
-- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
+- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the instance(s) provisioned by Terraform. You will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
 
-  - The required Terraform `workstation_ip` and `key_name` variables can be established multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
+  - The required Terraform `key_name` variable can be established by prefixing the variable name with `TF_VAR_` and setting it as an environment variable within your shell:
 
-  - **Linux**: `export TF_VAR_workstation_ip=202.10.23.16/32` and `export TF_VAR_key_name=your_ssh_key_name`
+  - **Linux**: `export TF_VAR_key_name=your_ssh_key_name`
 
-  - **Windows**: `set TF_VAR_workstation_ip=202.10.23.16/32` and `set TF_VAR_key_name=your_ssh_key_name`
+  - **Windows**: `set TF_VAR_key_name=your_ssh_key_name`
 
 - Terraform environment variables are documented here:
 [https://www.terraform.io/cli/config/environment-variables](https://www.terraform.io/cli/config/environment-variables)
@@ -114,13 +114,13 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise4
 
 ![AWS Architecture](/doc/AWS-VPC-FullApp.png)
 
-The auto scaling web application layer bootstraps itself with both the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2020) and [API](https://github.com/cloudacademy/voteapp-api-go) components by pulling down their **latest** respective releases from the following repos:
+The auto scaling web application layer bootstraps itself with both the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2023) and [API](https://github.com/cloudacademy/voteapp-api-go) components by pulling down their **latest** respective releases from the following repos:
 
-* Frontend: https://github.com/cloudacademy/voteapp-frontend-react-2020/releases/latest
+* Frontend: https://github.com/cloudacademy/voteapp-frontend-react-2023/releases/latest
 
 * API: https://github.com/cloudacademy/voteapp-api-go/releases/latest
 
-The bootstrapping process for the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2020) and [API](https://github.com/cloudacademy/voteapp-api-go) components is codified within a ```template_cloudinit_config``` block located in the application module's [main.tf](./modules/application/main.tf) file:
+The bootstrapping process for the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2023) and [API](https://github.com/cloudacademy/voteapp-api-go) components is codified within a ```template_cloudinit_config``` block located in the application module's [main.tf](./modules/application/main.tf) file:
 
 ```terraform
 data "template_cloudinit_config" "config" {
@@ -144,10 +144,10 @@ data "template_cloudinit_config" "config" {
 
     echo ===========================
     echo FRONTEND - download latest release and install...
-    mkdir -p ./voteapp-frontend-react-2020
-    pushd ./voteapp-frontend-react-2020
-    curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2020/releases/latest | jq -r '.assets[0].browser_download_url' | xargs curl -OL
-    INSTALL_FILENAME=$(curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2020/releases/latest | jq -r '.assets[0].name')
+    mkdir -p ./voteapp-frontend-react-2023
+    pushd ./voteapp-frontend-react-2023
+    curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2023/releases/latest | jq -r '.assets[0].browser_download_url' | xargs curl -OL
+    INSTALL_FILENAME=$(curl -sL https://api.github.com/repos/cloudacademy/voteapp-frontend-react-2023/releases/latest | jq -r '.assets[0].name')
     tar -xvzf $INSTALL_FILENAME
     rm -rf /var/www/html
     cp -R build /var/www/html
@@ -215,15 +215,15 @@ The ALB will configured with a single listener (port 80). 2 target groups will b
 
 #### TF Variable Notes
 
-- `workstation_ip`: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address).
+> **Note**: SSH access is automatically restricted to your current machine's public IP address, dynamically detected at `terraform plan`/`apply` time using the `hashicorp/http` provider and `http://checkip.amazonaws.com`. No `workstation_ip` variable is required.
 
-- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
+- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the instance(s) provisioned by Terraform. You will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
 
-  - The required Terraform `workstation_ip` and `key_name` variables can be established multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
+  - The required Terraform `key_name` variable can be established by prefixing the variable name with `TF_VAR_` and setting it as an environment variable within your shell:
 
-  - **Linux**: `export TF_VAR_workstation_ip=202.10.23.16/32` and `export TF_VAR_key_name=your_ssh_key_name`
+  - **Linux**: `export TF_VAR_key_name=your_ssh_key_name`
 
-  - **Windows**: `set TF_VAR_workstation_ip=202.10.23.16/32` and `set TF_VAR_key_name=your_ssh_key_name`
+  - **Windows**: `set TF_VAR_key_name=your_ssh_key_name`
 
 - Terraform environment variables are documented here:
 [https://www.terraform.io/cli/config/environment-variables](https://www.terraform.io/cli/config/environment-variables)
@@ -241,9 +241,9 @@ https://github.com/cloudacademy/terraform-aws/tree/main/exercises/exercise5
 
 ![AWS Architecture](/doc/AWS-VPC-FullApp.png)
 
-The auto scaling web application layer bootstraps itself with both the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2020) and [API](https://github.com/cloudacademy/voteapp-api-go) components by pulling down their **latest** respective releases from the following repos:
+The auto scaling web application layer bootstraps itself with both the [Frontend](https://github.com/cloudacademy/voteapp-frontend-react-2023) and [API](https://github.com/cloudacademy/voteapp-api-go) components by pulling down their **latest** respective releases from the following repos:
 
-* Frontend: https://github.com/cloudacademy/voteapp-frontend-react-2020/releases/latest
+* Frontend: https://github.com/cloudacademy/voteapp-frontend-react-2023/releases/latest
 
 * API: https://github.com/cloudacademy/voteapp-api-go/releases/latest
 
@@ -343,15 +343,15 @@ The ALB will configured with a single listener (port 80). 2 target groups will b
 
 #### TF Variable Notes
 
-- `workstation_ip`: The Terraform variable `workstation_ip` represents your workstation's external perimeter public IP address, and needs to be represented using CIDR notation. This IP address is used later on within the Terraform infrastructure provisioning process to lock down SSH access on the instance(s) (provisioned by Terraform) - this is a security safety measure to prevent anyone else from attempting SSH access. The public IP address will be different and unique for each user - the easiest way to get this address is to type "what is my ip address" in a google search. As an example response, lets say Google responded with `202.10.23.16` - then the value assigned to the Terraform `workstation_ip` variable would be `202.10.23.16/32` (note the `/32` is this case indicates that it is a single IP address).
+> **Note**: SSH access is automatically restricted to your current machine's public IP address, dynamically detected at `terraform plan`/`apply` time using the `hashicorp/http` provider and `http://checkip.amazonaws.com`. No `workstation_ip` variable is required.
 
-- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the Bastion Host that gets created at provisioning time. If you intend to use the Bastion Host - then you will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
+- `key_name`: The Terraform variable `key_name` represents the AWS SSH Keypair name that will be used to allow SSH access to the instance(s) provisioned by Terraform. You will need to create your own SSH Keypair (typically done within the AWS EC2 console) ahead of time.
 
-  - The required Terraform `workstation_ip` and `key_name` variables can be established multiple ways, one of which is to prefix the variable name with `TF_VAR_` and have it then set as an environment variable within your shell, something like:
+  - The required Terraform `key_name` variable can be established by prefixing the variable name with `TF_VAR_` and setting it as an environment variable within your shell:
 
-  - **Linux**: `export TF_VAR_workstation_ip=202.10.23.16/32` and `export TF_VAR_key_name=your_ssh_key_name`
+  - **Linux**: `export TF_VAR_key_name=your_ssh_key_name`
 
-  - **Windows**: `set TF_VAR_workstation_ip=202.10.23.16/32` and `set TF_VAR_key_name=your_ssh_key_name`
+  - **Windows**: `set TF_VAR_key_name=your_ssh_key_name`
 
 - Terraform environment variables are documented here:
 [https://www.terraform.io/cli/config/environment-variables](https://www.terraform.io/cli/config/environment-variables)
