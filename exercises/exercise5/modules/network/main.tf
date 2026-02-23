@@ -1,9 +1,9 @@
 terraform {
-  required_version = ">= 1.4.0"
+  required_version = ">= 1.12"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.0.0"
+      version = "~> 6.0"
     }
   }
 }
@@ -12,9 +12,9 @@ terraform {
 #tfsec:ignore:aws-ec2-no-public-ip-subnet
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.0.0"
+  version = "6.6.0"
 
-  name = "CloudAcademy"
+  name = "QA.Cloud.DevOps"
   cidr = var.cidr_block
 
   azs             = var.availability_zones
@@ -25,7 +25,7 @@ module "vpc" {
   enable_vpn_gateway = false
 
   tags = {
-    Name = "CloudAcademy"
+    Name = "QA.Cloud.DevOps"
     Demo = "Terraform"
   }
 }
