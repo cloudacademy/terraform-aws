@@ -14,6 +14,13 @@ terraform {
 
 data "http" "my_ip" {
   url = "http://checkip.amazonaws.com"
+
+  lifecycle {
+    postcondition {
+      condition     = can(regex("^(\\d{1,3}\\.){3}\\d{1,3}$", chomp(self.response_body)))
+      error_message = "checkip.amazonaws.com did not return a valid IPv4 address: \"${chomp(self.response_body)}\"."
+    }
+  }
 }
 
 provider "aws" {
@@ -233,6 +240,18 @@ resource "aws_instance" "bastion" {
   tags = {
     Name  = "Bastion"
     Owner = "QA.Cloud.DevOps"
+  }
+
+  lifecycle {
+    precondition {
+      condition     = data.aws_ami.ubuntu.virtualization_type == "hvm"
+      error_message = "The selected AMI (${data.aws_ami.ubuntu.id}) must use HVM virtualisation. Got: ${data.aws_ami.ubuntu.virtualization_type}."
+    }
+
+    postcondition {
+      condition     = self.public_ip != ""
+      error_message = "Bastion instance (${self.id}) was not assigned a public IP address. Ensure associate_public_ip_address is true and the subnet has map_public_ip_on_launch enabled."
+    }
   }
 }
 
