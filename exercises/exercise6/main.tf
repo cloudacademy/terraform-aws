@@ -1,19 +1,15 @@
 terraform {
-  required_version = ">= 1.4.0"
+  required_version = ">= 1.12"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.0.0"
+      version = "~> 6.0"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 2.10.0"
+      version = "~> 3.1"
     }
-    # null = {
-    #   source  = "hashicorp/null"
-    #   version = ">= 3.2.0"
-    # }
   }
 }
 
@@ -24,19 +20,21 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 
 locals {
-  name        = "cloudacademydevops"
-  environment = "demo"
-  k8s_version = "1.27"
+  name             = "QA-Cloud-DevOps"
+  eks_cluster_name = "${local.name}-EKS-Cluster"
+  environment      = "Demo"
+  k8s_version      = "1.35"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 }
 
+# NETWORK
 #====================================
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = ">= 5.0.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -75,26 +73,39 @@ module "vpc" {
   }
 
   tags = {
-    Name        = "${local.name}-eks"
+    Name        = local.name
     Environment = local.environment
   }
 }
 
+# EKS CLUSTER
 #====================================
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = ">= 19.15.0"
+  version = "~> 21.15"
 
-  cluster_name    = "${local.name}-eks-2025"
-  cluster_version = local.k8s_version
+  name = local.eks_cluster_name
 
-  cluster_endpoint_public_access = true
+  kubernetes_version = local.k8s_version
 
-  cluster_addons = {
-    coredns    = {}
-    kube-proxy = {}
-    vpc-cni    = {}
+  endpoint_public_access = true
+
+  enable_cluster_creator_admin_permissions = true
+
+  addons = {
+    vpc-cni = {
+      most_recent    = true
+      before_compute = true # must be installed before nodes join
+    }
+    kube-proxy = {
+      most_recent    = true
+      before_compute = true
+    }
+    coredns = {
+      most_recent = true
+      # before_compute = false (default) - requires nodes to be running
+    }
   }
 
   vpc_id     = module.vpc.vpc_id
@@ -105,34 +116,39 @@ module "eks" {
       use_custom_launch_template = false
 
       instance_types = ["m5.large"]
-      capacity_type  = "SPOT" # useful for demos and dev purposes
-      # capacity_type = "ON_DEMAND"
+      # capacity_type  = "SPOT" # useful for demos and dev purposes
+      capacity_type = "ON_DEMAND"
 
-      disk_size = 10
+      disk_size = 20 #Minimum required disk size for AL2023_x86_64_STANDARD ami-type is 20
 
-      min_size     = 2
-      max_size     = 2
-      desired_size = 2
+      min_size     = 1
+      max_size     = 1
+      desired_size = 1
     }
   }
 
   tags = {
-    Name        = "${local.name}-eks"
+    Name        = local.name
     Environment = local.environment
   }
 }
 
+# NGINX INGRESS CONTROLLER
 #====================================
 
+data "aws_eks_cluster_auth" "cluster_auth" {
+  name = module.eks.cluster_name
+}
+
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
 
-    exec {
+    exec = {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"
-      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--region", "us-west-2"]
     }
   }
 }
@@ -145,35 +161,20 @@ resource "helm_release" "nginx_ingress" {
   namespace        = "nginx-ingress"
   create_namespace = true
 
-  set {
-    name  = "service.type"
-    value = "ClusterIP"
-  }
-
-  set {
-    name  = "controller.service.name"
-    value = "nginx-ingress-controller"
-  }
+  set = [
+    {
+      name  = "service.type"
+      value = "ClusterIP"
+    },
+    {
+      name  = "controller.service.name"
+      value = "nginx-ingress-controller"
+    }
+  ]
 }
 
-# resource "helm_release" "argo" {
-#   name = "argo"
-
-#   repository       = "https://argoproj.github.io/argo-helm"
-#   chart            = "argo-cd"
-#   namespace        = "argo"
-#   create_namespace = true
-
-#   # set {
-#   #   name  = "service.type"
-#   #   value = "ClusterIP"
-#   # }
-
-#   # set {
-#   #   name  = "controller.service.name"
-#   #   value = "nginx-ingress-controller"
-#   # }
-# }
+# K8s APP DEPLOYMENT
+#====================================
 
 resource "terraform_data" "deploy_app" {
   triggers_replace = {
@@ -185,11 +186,19 @@ resource "terraform_data" "deploy_app" {
     working_dir = path.module
     command     = <<EOT
       echo deploying app...
-      ./k8s/app.install.sh
+      ./k8s/app.install.sh ${local.eks_cluster_name}
     EOT
   }
 
   depends_on = [
     helm_release.nginx_ingress
   ]
+}
+
+# OUTPUTS
+#====================================
+
+output "token" {
+  value     = data.aws_eks_cluster_auth.cluster_auth.token
+  sensitive = true
 }

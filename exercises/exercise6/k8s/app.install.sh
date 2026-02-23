@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
+EKS_CLUSTER_NAME=$1
+echo $EKS_CLUSTER_NAME
+
 echo -e "\nSTEP1: updating kubeconfig...\n"
 
-aws eks update-kubeconfig --region us-west-2 --name cloudacademydevops-eks
+aws eks update-kubeconfig --region us-west-2 --name $EKS_CLUSTER_NAME
 kubectl create ns cloudacademy
 kubectl config set-context --current --namespace=cloudacademy
 
