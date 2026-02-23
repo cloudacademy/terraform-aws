@@ -36,31 +36,6 @@ resource "aws_cloudwatch_log_group" "main_api_gw" {
 
 #====================================
 
-resource "aws_apigatewayv2_integration" "bitcoin" {
-  api_id = aws_apigatewayv2_api.main.id
-
-  integration_type = "AWS_PROXY"
-  integration_uri  = module.lambda_function["bitcoin"].invoke_arn
-}
-
-resource "aws_apigatewayv2_route" "bitcoin" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "GET /bitcoin"
-
-  target = "integrations/${aws_apigatewayv2_integration.bitcoin.id}"
-}
-
-resource "aws_lambda_permission" "bitcoin" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = module.lambda_function["bitcoin"].function_name
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${aws_apigatewayv2_api.main.execution_arn}/*/*"
-}
-
-#====================================
-
 resource "aws_apigatewayv2_integration" "hello" {
   api_id = aws_apigatewayv2_api.main.id
 
