@@ -15,6 +15,3 @@ variable "cidr_block" {
   description = "VPC cidr block. Example: 10.10.0.0/16"
 }
 
-variable "workstation_ip" {
-  type = string
-}
