@@ -24,8 +24,9 @@ resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "CloudAcademy"
-    Demo = "Terraform"
+    Name    = "QA.Cloud.DevOps"
+    Demo    = "Terraform"
+    Execise = "1"
   }
 }
 
@@ -56,7 +57,7 @@ resource "aws_internet_gateway" "main" {
 
   tags = {
     "Name"  = "Main"
-    "Owner" = "CloudAcademy"
+    "Owner" = "QA.Cloud.DevOps"
   }
 }
 
@@ -125,7 +126,6 @@ resource "aws_instance" "web" {
 
   associate_public_ip_address = true
 
-  #userdata
   user_data = <<EOF
 #!/bin/bash
 apt-get -y update
@@ -144,6 +144,6 @@ echo fin v1.00!
 EOF
 
   tags = {
-    Name = "CloudAcademy"
+    Name = "QA.Cloud.DevOps-Webserver1"
   }
 }
