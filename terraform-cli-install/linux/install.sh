@@ -7,7 +7,7 @@ curl -OL https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION
 
 # install
 unzip terraform_${VERSION}_linux_amd64.zip
-mv terraform /usr/local/bin/
+mv terraform /usr/local/bin/
 
 # auto-completion setup
 terraform -install-autocomplete
