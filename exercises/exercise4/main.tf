@@ -1,11 +1,19 @@
 terraform {
-  required_version = ">= 1.5"
+  required_version = ">= 1.12"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 6.0"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.0"
     }
   }
+}
+
+data "http" "my_ip" {
+  url = "http://checkip.amazonaws.com"
 }
 
 provider "aws" {
@@ -27,7 +35,7 @@ module "security" {
   source = "./modules/security"
 
   vpc_id         = module.network.vpc_id
-  workstation_ip = var.workstation_ip
+  workstation_ip = "${chomp(data.http.my_ip.response_body)}/32"
 
   depends_on = [
     module.network

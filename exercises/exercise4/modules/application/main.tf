@@ -1,9 +1,9 @@
 terraform {
-  required_version = ">= 1.4.0"
+  required_version = ">= 1.12"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.0.0"
+      version = "~> 6.0"
     }
     template = {
       source  = "hashicorp/template"
@@ -17,7 +17,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
   }
 
   filter {
@@ -79,7 +79,7 @@ data "template_cloudinit_config" "config" {
     systemctl status nginx
     echo fin v1.00!
 
-    EOF    
+    EOF
   }
 }
 
@@ -99,7 +99,7 @@ resource "aws_launch_template" "apptemplate" {
 
     tags = {
       Name  = "FrontendApp"
-      Owner = "CloudAcademy"
+      Owner = "QA.Cloud.DevOps"
     }
   }
 
@@ -228,7 +228,7 @@ resource "aws_autoscaling_group" "asg" {
 data "aws_instances" "application" {
   instance_tags = {
     Name  = "FrontendApp"
-    Owner = "CloudAcademy"
+    Owner = "QA.Cloud.DevOps"
   }
 
   instance_state_names = ["pending", "running"]
