@@ -1,11 +1,19 @@
 terraform {
-  required_version = ">= 1.5.0"
+  required_version = ">= 1.12"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.0.0"
+      version = "~> 6.0"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.0"
     }
   }
+}
+
+data "http" "my_ip" {
+  url = "http://checkip.amazonaws.com"
 }
 
 provider "aws" {
@@ -17,7 +25,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
   }
 
   filter {
@@ -34,7 +42,7 @@ resource "aws_vpc" "main" {
   instance_tenancy = "default"
 
   tags = {
-    Name = "CloudAcademy"
+    Name = "QA.Cloud.DevOps"
     Demo = "Terraform"
   }
 }
@@ -88,7 +96,7 @@ resource "aws_internet_gateway" "main" {
 
   tags = {
     "Name"  = "Main"
-    "Owner" = "CloudAcademy"
+    "Owner" = "QA.Cloud.DevOps"
   }
 }
 
@@ -104,8 +112,8 @@ resource "aws_nat_gateway" "nat" {
     Name = "NAT"
   }
 
-  # To ensure proper ordering, it is recommended to add an explicit dependency
-  # on the Internet Gateway for the VPC.
+  # Ensure proper ordering
+  # Add an explicit dependency on the Internet Gateway for the VPC
   depends_on = [aws_internet_gateway.main]
 }
 
@@ -159,6 +167,14 @@ resource "aws_security_group" "webserver" {
   name        = "webserver"
   description = "webserver network traffic"
   vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "SSH from management workstation"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
+  }
 
   dynamic "ingress" {
     for_each = var.webserver_sg_rules.ingress_rules
@@ -224,7 +240,7 @@ resource "aws_launch_template" "launchtemplate1" {
     resource_type = "instance"
 
     tags = {
-      Name = "WebServer"
+      Name = "QA.Cloud.DevOps-Webserver"
     }
   }
 

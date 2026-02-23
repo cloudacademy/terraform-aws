@@ -34,13 +34,6 @@ variable "webserver_sg_rules" {
   default = {
     ingress_rules = [
       {
-        description = "SSH from management workstation"
-        from_port   = 22
-        to_port     = 22
-        protocol    = "tcp"
-        cidr_blocks = ["1.1.1.1/32"] # <- replace with your own workstation IP
-      },
-      {
         description = "80 from public subnets (ALB)"
         from_port   = 80
         to_port     = 80
