@@ -9,10 +9,6 @@ terraform {
       source  = "hashicorp/http"
       version = "~> 3.0"
     }
-    null = {
-      source  = "hashicorp/null"
-      version = "3.2.1"
-    }
   }
 }
 
@@ -22,10 +18,6 @@ data "http" "my_ip" {
 
 provider "aws" {
   region = "us-west-2"
-}
-
-provider "null" {
-  # Configuration options
 }
 
 #====================================
